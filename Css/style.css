@@ -2393,9 +2393,183 @@ a:hover {
 .success { background-color: #1b5e20; color: #e8f5e9; padding: 12px; border-radius: 5px; margin: 10px 0; }
 .error   { background-color: #b71c1c; color: #ffebee; padding: 12px; border-radius: 5px; margin: 10px 0; }
 
-/* Responsive */
 @media (max-width: 768px) {
     .admin-wrapper { padding: 15px; }
     table { display: block; overflow-x: auto; white-space: nowrap; }
     form input[type="submit"] { font-size: 14px; padding: 10px; }
+}
+
+.page-wrapper {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #ccc;
+    font-size: 14px;
+}
+
+.form-container input[type="text"],
+.form-container input[type="email"],
+.form-container input[type="password"],
+.form-container input[type="number"],
+.form-container input[type="file"],
+.form-container textarea,
+.form-container select {
+    width: 100%;
+    padding: 12px;
+    background-color: #252525;
+    border: 1px solid #444;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-container input:focus,
+.form-container textarea:focus,
+.form-container select:focus {
+    border-color: #c41e3a;
+    outline: none;
+}
+
+.form-container textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-container input[type="submit"],
+.form-container button {
+    background-color: #c41e3a;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.form-container input[type="submit"]:hover,
+.form-container button:hover {
+    background-color: #a01830;
+}
+
+.form-container input[type="reset"] {
+    background-color: #444;
+}
+
+.form-container input[type="reset"]:hover {
+    background-color: #555;
+}
+
+.radio-group,
+.checkbox-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.radio-group label,
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #ccc;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.message-box {
+    padding: 12px;
+    border-radius: 5px;
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+.message-box.error {
+    background-color: #b71c1c;
+    color: #ffebee;
+}
+
+.message-box.success {
+    background-color: #1b5e20;
+    color: #e8f5e9;
+}
+
+.form-links {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.form-links a {
+    color: #4da6ff;
+    text-decoration: none;
+}
+
+.form-links a:hover {
+    text-decoration: underline;
+}
+
+.page-title {
+    text-align: center;
+    color: #c41e3a;
+    margin-bottom: 25px;
+    font-size: 24px;
+    border-bottom: 2px solid #c41e3a;
+    padding-bottom: 10px;
+}
+
+.confirmation-wrapper {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.confirmation-wrapper h2 {
+    color: #4caf50;
+    margin-bottom: 15px;
+}
+
+.confirmation-wrapper p {
+    margin-bottom: 20px;
+    color: #ccc;
+}
+
+.confirmation-wrapper a {
+    color: #4da6ff;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    .page-wrapper {
+        margin: 20px;
+        padding: 20px;
+    }
+    .radio-group,
+    .checkbox-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
 }

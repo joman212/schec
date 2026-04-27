@@ -62,8 +62,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION["user_email"] = $email;
         $_SESSION["user_name"] = "Joey Joestar";
         echo"Admin login successful!<br>";
-        echo"<a href='admin_dashboard.php'>Go to Admin Dashboard</a>";
-        die();
+        header("Location: admin_dashboard.php");
+        exit();
     }
     
     include 'db_connect.php';
@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION["user_id"] = $user["id"];
             $_SESSION["user_email"] = $user["email"];
             echo"Login successful!<br>";
-            echo"<a href='../index.html'>Continue to Home</a>";
+            header("Location: account.php");
             die();
         } else {
             echo"Error. Invalid email or password.<br>";
