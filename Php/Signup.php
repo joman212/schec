@@ -1,3 +1,40 @@
+<?php
+session_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $first_name=$_POST["first_name"]; 
+    $last_name=$_POST["last_name"]; 
+    $email=$_POST["email"]; 
+    $password=$_POST["password"]; 
+    $confirm_password=$_POST["confirm_password"]; 
+    
+    if($password!=$confirm_password) {
+        echo"Error. Passwords mismatch.<br>";
+        die();
+    }
+    
+    // ✅ INLINE DB CONNECTION (Replaces the missing include file)
+    $conn= mysqli_connect("localhost","root","","schecter_db");
+    if($conn==TRUE) {
+        // Connected successfully
+    } else {
+        echo"Error. Connection failed!<br>"; 
+        die();
+    }
+    
+    // Insert new user
+    $stmt="INSERT INTO`users`(`first_name`,`last_name`,`email`,`password`) VALUES('$first_name','$last_name','$email','$password')"; 
+    $result= mysqli_query($conn,$stmt); 
+    
+    if($result==FALSE) {
+        echo"Error. Account could not be created.<br>";
+    } else {
+        echo"Account created successfully!<br>";
+        echo"<a href='login.php'>Login here</a>";
+        die();
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,11 +58,11 @@ content="width=device-width, initial-scale=1.0">
   <a href="../html/products.html">Guitars</a>
   <a href="../html/Accessories.html">Accessories</a>
   <a href="../html/about.html">About</a>
-  <a href="../html/support.html">Support</a>
+  <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>
   <a href="../php/login.php">Sign In</a>
   
-  <a href="../html/cart.html" class="oc-cart">
+  <a href="../php/cart.php" class="oc-cart">
     <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
@@ -37,38 +74,6 @@ content="width=device-width, initial-scale=1.0">
     </div>
     <span style="font-size:30px;cursor:pointer;color:#fff;margin-right:15px;" onclick="openNav()">&#9776;</span>
   </header>
-<?php
-    $conn= mysqli_connect("localhost","root","","schecter_db"); 
-if($conn==TRUE) {
-} else {
-    echo"Error. Connection failed!<br>"; 
-    die();
-}
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $first_name=$_POST["first_name"]; 
-    $last_name=$_POST["last_name"]; 
-    $email=$_POST["email"]; 
-    $password=$_POST["password"]; 
-    $confirm_password=$_POST["confirm_password"]; 
-    
-    if($password!=$confirm_password) {
-        echo"Error. Passwords mismatch.<br>";
-        die();
-    }
-    
-    include 'db_connect.php';
-    
-    $stmt="INSERT INTO`users`(`first_name`,`last_name`,`email`,`password`) VALUES('$first_name','$last_name','$email','$password')"; 
-    $result= mysqli_query($conn,$stmt); 
-    if($result==FALSE) {
-        echo"Error. Account could not be created.<br>";
-    } else {
-        echo"Account created successfully!<br>";
-        echo"<a href='login.php'>Login here</a>";
-        die();
-    }
-}
-?>
 <form action="signup.php" method="post">
     First Name<input type="text" name="first_name" required><br>
     Last Name<input type="text" name="last_name" required><br>

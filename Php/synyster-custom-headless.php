@@ -21,11 +21,11 @@ content="width=device-width, initial-scale=1.0">
   <a href="../html/products.html">Guitars</a>
   <a href="../html/Accessories.html">Accessories</a>
   <a href="../html/about.html">About</a>
-  <a href="../html/support.html">Support</a>
+  <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>
   <a href="../php/login.php">Sign In</a>
   
-  <a href="../html/cart.html" class="oc-cart">
+  <a href="../php/cart.php" class="oc-cart">
     <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
@@ -37,77 +37,77 @@ content="width=device-width, initial-scale=1.0">
     </div>
     <span style="font-size:30px;cursor:pointer;color:#fff;margin-right:15px;" onclick="openNav()">&#9776;</span>
   </header>
-
     <section class="product-details">
         <div class="image-gallery">
-        <input type="radio" id="img17" name="gallery" checked>
-        <input type="radio" id="img18" name="gallery">
-        <input type="radio" id="img19" name="gallery">
-        <input type="radio" id="img20" name="gallery">
+        <input type="radio" id="img9" name="gallery" checked>
+        <input type="radio" id="img10" name="gallery">
+        <input type="radio" id="img11" name="gallery">
+        <input type="radio" id="img12" name="gallery">
 
         <div class="main-image">
-            <img src="../images/Synyster-fr.avif" alt="Synyster standard">
+            <img src="../images/synyster-custom-headless.avif" alt="Synyster standard">
         </div>
         <div class="thumbnails">
-            <label for="img17">
-                <img src="../images/synyster-fr.avif" alt="Synyster">
+            <label for="img9">
+                <img src="../images/synyster-custom-headless.avif" alt="Synyster">
             </label>
-            <label for="img18">
-                <img src="../images/synyster-fr2.avif" alt="Synyster Front View">
+            <label for="img10">
+                <img src="../images/synyster-custom-headless2.avif" alt="Synyster Front View">
             </label>
-            <label for="img19">
-                <img src="../images/synyster-fr3.avif" alt="Synyster Side View">
+            <label for="img11">
+                <img src="../images/synyster-custom-headless3.avif" alt="Synyster Side View">
             </label>
-            <label for="img20">
-                <img src="../images/synyster-fr4.avif" alt="Synyster Back View">
+            <label for="img12">
+                <img src="../images/synyster-custom-headless4.avif" alt="Synyster Back View">
             </label>
         </div>
     </div>
         <div class="details">
-            <h1 class="itemName" class="itemName">Synyster Gates FR QM USA Signature</h1>
-            <h4>Trans Clear Black Burst with Pinstripes</h4>
-            <p>The high-performance Synyster Gates FR QM USA Signature guitar delivers power and precision.</p>
-            <p class="price">$<span class="itemPrice">5,249</span>.00</p>
+            <h1 class="itemName" class="itemName">Synyster Gates 7 Headless</h1>
+            <h4>Oak Green Metallic</h4>
+            <p>A revolutionary 7-string headless guitar designed for modern shredders.</p>
+            <p class="price">$<span class="itemPrice">2,299</span>.00</p>
             <h3>Specifications:</h3>
             <ul>
-                <li>Mahogany body with Satin Black finish</li>
-                <li>Seymour Duncan Synyster Gates Invader pickups</li>
-                <li>Floyd Rose 1500 bridge</li>
-                <li>Ebony fingerboard with "SYN" inlays</li>
-                <li>24 Extra Jumbo Frets</li>
+                <li>Mahogany body with Maple top</li>
+                <li>Seymour Duncan Invader pickups</li>
+                <li>Evertune Bridge for perfect tuning stability</li>
+                <li>Ebony fingerboard with Syn inlays</li>
+                <li>24 Extra Jumbo Stainless Steel Frets</li>
+                <li>Ultra-thin C neck profile</li>
             </ul>
             <section class="gates">
     <img src="../images/gates.avif" alt="Synyster Gates Signature">
 </section>
-    <div class="price">$5,249.00</div>
+        <div class="price">$2,299.00</div>
 
-<button class="add-to-cart btn" 
-    data-id="synyster-fr" 
-    data-name="Synyster Gates FR QM USA Signature" 
-    data-price="5249.00" 
-    data-image="../images/synyster-fr.avif">
+            <button class="add-to-cart btn" 
+    data-id="synyster-custom-headless" 
+    data-name="Synyster Gates 7 Headless" 
+    data-price="2299.00" 
+    data-image="../images/synyster-custom-headless.avif">
     Add to Cart
 </button>
         </div>
     </section>
     <section class="reviews">
-    <h2>Customer Reviews</h2>
+        <h2>Customer Reviews</h2>
 
-    <div class="review">
-        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
-        <p><strong>John D.</strong> - "Amazing tone and quality! The best acoustic I’ve ever owned."</p>
-    </div>
-    
-    <div class="review">
-        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
-        <p><strong>Lisa M.</strong> - "Great sound, and the Fishman preamp makes it even better!"</p>
-    </div>
+        <div class="review">
+            <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
+            <p><strong>James H.</strong> - "Incredible sustain and tuning stability! Best 7-string I've played."</p>
+        </div>
 
-    <div class="review">
-        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★☆</p>
-        <p><strong>Alex R.</strong> - "Beautiful finish and comfortable to play."</p>
-    </div>
-</section>
+        <div class="review">
+            <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
+            <p><strong>Mike R.</strong> - "Headless design makes it so comfortable. Perfect for long gigs!"</p>
+        </div>
+
+        <div class="review">
+            <p style="color: #D4AF37; margin-bottom: 5px;">★★★★☆</p>
+            <p><strong>Sarah T.</strong> - "The Seymour Duncan Invaders are absolute monsters. Killer tone!"</p>
+        </div>
+    </section>
     <footer>
         <p>&copy; 2026 Schecter Guitars. All rights reserved.</p>
         <div class="social-media-icons">
@@ -126,5 +126,7 @@ content="width=device-width, initial-scale=1.0">
     </div>
     </footer>
 <script src="../js/main.js"></script>
+
+
 </body>
 </html>

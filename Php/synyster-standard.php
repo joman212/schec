@@ -1,4 +1,40 @@
-<!DOCTYPE html>
+<?php
+session_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if(!isset($_SESSION["user_id"])) {
+        echo"Error. Please login first to add items to cart.<br>";
+        echo"<a href='login.php'>Go to Login</a>";
+        die();
+    }
+    
+    $user_id=$_SESSION["user_id"];
+    $product_id=$_POST["product_id"];
+    $quantity=$_POST["quantity"];
+    
+    $conn= mysqli_connect("localhost","root","","schecter_db");
+    if($conn==TRUE) {
+    } else {
+        echo"Error. Connection failed!<br>";
+        die();
+    }
+    
+    $stmt="SELECT * FROM`cart` WHERE`user_id`='$user_id' AND`product_id`='$product_id'";
+    $result= mysqli_query($conn,$stmt);
+    
+    if($result!=FALSE && mysqli_num_rows($result)>0) {
+        $stmt="UPDATE`cart` SET`quantity`=`quantity`+'$quantity' WHERE`user_id`='$user_id' AND`product_id`='$product_id'";
+        $result= mysqli_query($conn,$stmt);
+        if($result==FALSE) echo"Error. Cart was not updated.<br>";
+        else echo"Item quantity updated in cart!<br>";
+    } else {
+        $stmt="INSERT INTO`cart`(`user_id`,`product_id`,`quantity`) VALUES('$user_id','$product_id','$quantity')";
+        $result= mysqli_query($conn,$stmt);
+        if($result==FALSE) echo"Error. Item was not added to cart.<br>";
+        else echo"Item added to cart successfully!<br>";
+    }
+}
+?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -21,11 +57,11 @@ content="width=device-width, initial-scale=1.0">
   <a href="../html/products.html">Guitars</a>
   <a href="../html/Accessories.html">Accessories</a>
   <a href="../html/about.html">About</a>
-  <a href="../html/support.html">Support</a>
+  <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>
   <a href="../php/login.php">Sign In</a>
   
-  <a href="../html/cart.html" class="oc-cart">
+  <a href="../php/cart.php" class="oc-cart">
     <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
@@ -40,78 +76,75 @@ content="width=device-width, initial-scale=1.0">
 
     <section class="product-details">
         <div class="image-gallery">
-        <input type="radio" id="img13" name="gallery" checked>
-        <input type="radio" id="img14" name="gallery">
-        <input type="radio" id="img15" name="gallery">
-        <input type="radio" id="img16" name="gallery">
+        <input type="radio" id="img21" name="gallery" checked>
+        <input type="radio" id="img22" name="gallery">
+        <input type="radio" id="img23" name="gallery">
+        <input type="radio" id="img24" name="gallery">
 
         <div class="main-image">
-            <img src="../images/Poet1.png" alt="Synyster standard">
+            <img src="../images/Synyster-standard.avif" alt="Synyster standard">
         </div>
         <div class="thumbnails">
-            <label for="img13">
-                <img src="../images/Poet1.png" alt="Poet">
+            <label for="img17">
+                <img src="../images/synyster-standard.avif" alt="Synyster">
             </label>
-            <label for="img14">
-                <img src="../images/Poet2.png" alt="Poet Front View">
+            <label for="img18">
+                <img src="../images/synyster-standard2.avif" alt="Synyster Front View">
             </label>
-            <label for="img15">
-                <img src="../images/Poet3.png" alt="Poet Side View">
+            <label for="img19">
+                <img src="../images/synyster-standard3.avif" alt="Synyster Side View">
             </label>
-            <label for="img16">
-                <img src="../images/Poet4.png" alt="Poet Back View">
-            </label>
-                        <label for="img16">
-                <img src="../images/Poet5.jpeg" alt="Synyster Gates with Guitars">
+            <label for="img20">
+                <img src="../images/synyster-standard4.avif" alt="Synyster Back View">
             </label>
         </div>
     </div>
         <div class="details">
-            <h1 class="itemName" class="itemName">Synyster Gates Limited Edition, (D)eath of a Poet</h1>
-            <h4>Bone Spatter W/ Pin Striped Decal</h4>
-            <p> Hand-painted by Synyster Gates for a one-of-a-kind collectible. Own a piece of history with 100% guarantee of authenticity. </p>
-    <p class="price">$<span class="itemPrice">5,999</span>.00</p>
-
-            <h6>Specifications:</h6>
-<ul>
-    <li>Limited Edition // Only 30 produced worldwide + Blockchain Certificate of Authenticity</li>
-    <li>Mahogany Body w/ Mahogany Top, Black Binding & Hand-painted Bone Spatter Finish</li>
-    <li>Schecter USA Synyster Gates Signature Humbucker + Sustainiac® Pickup System</li>
-    <li>Ebony Fretboard w/ Pearloid 'Syn' & 'Deathbat' at 12th Fret + Glow In The Dark Side Dots</li>
-    <li>25.5" Scale w/ Ultra Thin 'C' Neck Profile & Floyd Rose 1500 Series Hardware</li>
-</ul>
+            <h1 class="itemName" class="itemName">Synyster Gates Standard</h1>
+            <h4>Gloss Black with Silver Pinstripes</h4>
+            <p>A high-performance guitar designed for rock and metal players.</p>
+            <p class="price">$<span class="itemPrice">949</span>.00</p>
+            <h3>Specifications:</h3>
+            <ul>
+                <li>Mahogany body with Gloss Black finish</li>
+                <li>Duncan Designed HB-108 Detonator pickups</li>
+                <li>Floyd Rose Special bridge</li>
+                <li>Rosewood fingerboard with pearloid inlays</li>
+                <li>24 Extra Jumbo Frets</li>
+            </ul>
             <section class="gates">
     <img src="../images/gates.avif" alt="Synyster Gates Signature">
 </section>
 
-    <button class="add-to-cart btn" disabled style="background:#555;color:#888;cursor:not-allowed;opacity:0.7;">
-        SOLD OUT
-    </button>
-    <div style="margin-top:15px;">
-        <a href="../html/Contact.html" class="btn" style="background:#1A2238;color:#E76E24;border:2px solid #E76E24;">🔔 Notify When Available</a>
-    </div>
-        <p style="margin-top:20px;font-size:0.9rem;color:#888;font-style:italic;">
-        This limited edition guitar was produced in a run of only 30 units worldwide. All units have been claimed.
-    </p>
-</div>
+<button class="add-to-cart btn" 
+    data-id="Synyster-standard" 
+    data-name="Synyster Standard" 
+    data-price="949.00" 
+    data-image="../images/Synyster-standard.avif">
+    Add to Cart
+</button>
+<input type="hidden" name="product_id" value="2">
+<input type="number" name="quantity" value="1" min="1">
+        </div>
     </section>
-
-<section class="reviews">
+    <section class="reviews">
     <h2>Customer Reviews</h2>
+
     <div class="review">
         <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
         <p><strong>John D.</strong> - "Amazing tone and quality! The best acoustic I’ve ever owned."</p>
     </div>
+    
     <div class="review">
         <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
         <p><strong>Lisa M.</strong> - "Great sound, and the Fishman preamp makes it even better!"</p>
     </div>
+
     <div class="review">
-        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★☆</p>
         <p><strong>Alex R.</strong> - "Beautiful finish and comfortable to play."</p>
     </div>
 </section>
-
     <footer>
         <p>&copy; 2026 Schecter Guitars. All rights reserved.</p>
         <div class="social-media-icons">
@@ -130,7 +163,6 @@ content="width=device-width, initial-scale=1.0">
     </div>
     </footer>
 <script src="../js/main.js"></script>
-
 
 </body>
 </html>

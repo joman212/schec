@@ -21,11 +21,11 @@ content="width=device-width, initial-scale=1.0">
   <a href="../html/products.html">Guitars</a>
   <a href="../html/Accessories.html">Accessories</a>
   <a href="../html/about.html">About</a>
-  <a href="../html/support.html">Support</a>
+  <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>
   <a href="../php/login.php">Sign In</a>
   
-  <a href="../html/cart.html" class="oc-cart">
+  <a href="../php/cart.php" class="oc-cart">
     <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
@@ -40,71 +40,72 @@ content="width=device-width, initial-scale=1.0">
 
     <section class="product-details">
         <div class="image-gallery">
-        <input type="radio" id="img1" name="gallery" checked>
-        <input type="radio" id="img2" name="gallery">
-        <input type="radio" id="img3" name="gallery">
-        <input type="radio" id="img4" name="gallery">
+        <input type="radio" id="img17" name="gallery" checked>
+        <input type="radio" id="img18" name="gallery">
+        <input type="radio" id="img19" name="gallery">
+        <input type="radio" id="img20" name="gallery">
 
         <div class="main-image">
-            <img src="../images/Synyster-Custom-S.avif" alt="Synyster Custom-S">
+            <img src="../images/Synyster-fr.avif" alt="Synyster standard">
         </div>
         <div class="thumbnails">
-            <label for="img1">
-                <img src="../images/synyster-custom-s.avif" alt="Synyster">
+            <label for="img17">
+                <img src="../images/synyster-fr.avif" alt="Synyster">
             </label>
-            <label for="img2">
-                <img src="../images/synyster-custom-s2.avif" alt="Synyster Front View">
+            <label for="img18">
+                <img src="../images/synyster-fr2.avif" alt="Synyster Front View">
             </label>
-            <label for="img3">
-                <img src="../images/synyster-custom-s3.avif" alt="Synyster Side View">
+            <label for="img19">
+                <img src="../images/synyster-fr3.avif" alt="Synyster Side View">
             </label>
-            <label for="img4">
-                <img src="../images/synyster-custom-s4.avif" alt="Synyster Back View">
+            <label for="img20">
+                <img src="../images/synyster-fr4.avif" alt="Synyster Back View">
             </label>
         </div>
     </div>
         <div class="details">
-            <h1 class="itemName" class="itemName">Synyster Custom-S</h1>
-            <h4>Distressed Satin Black</h4>
-            <p>The ultimate shredding machine designed by Synyster Gates.</p>
-            <p class="price">$<span class="itemPrice">1,999</span>.00</p>
+            <h1 class="itemName" class="itemName">Synyster Gates FR QM USA Signature</h1>
+            <h4>Trans Clear Black Burst with Pinstripes</h4>
+            <p>The high-performance Synyster Gates FR QM USA Signature guitar delivers power and precision.</p>
+            <p class="price">$<span class="itemPrice">5,249</span>.00</p>
             <h3>Specifications:</h3>
             <ul>
-                <li>Mahogany body</li>
-                <li>Seymour Duncan Custom Invader pickups</li>
+                <li>Mahogany body with Satin Black finish</li>
+                <li>Seymour Duncan Synyster Gates Invader pickups</li>
                 <li>Floyd Rose 1500 bridge</li>
-                <li>Ebony fingerboard</li>
+                <li>Ebony fingerboard with "SYN" inlays</li>
+                <li>24 Extra Jumbo Frets</li>
             </ul>
-            
-<section class="gates">
+            <section class="gates">
     <img src="../images/gates.avif" alt="Synyster Gates Signature">
 </section>
-        <div class="price">$1,999.00</div>
+    <div class="price">$5,249.00</div>
 
 <button class="add-to-cart btn" 
-        data-id="synyster-custom-s"
-        data-name="Synyster Custom-S Guitar"
-        data-price="1999.00"
-        data-image="../images/synyster-custom-s.avif">
-  Add to Cart
+    data-id="synyster-fr" 
+    data-name="Synyster Gates FR QM USA Signature" 
+    data-price="5249.00" 
+    data-image="../images/synyster-fr.avif">
+    Add to Cart
 </button>
         </div>
     </section>
-<section class="reviews">
+    <section class="reviews">
     <h2>Customer Reviews</h2>
-    <div class="review">
-        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
-        <p><strong>Michael B.</strong> - "I was blown away by the craftsmanship. The tone is rich, and it’s super easy to play."</p>
-    </div>
 
     <div class="review">
         <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
-        <p><strong>Emma C.</strong> - "The detailing on this guitar is stunning. I’ve played for years, and this is my new favorite!"</p>
+        <p><strong>John D.</strong> - "Amazing tone and quality! The best acoustic I’ve ever owned."</p>
+    </div>
+    
+    <div class="review">
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
+        <p><strong>Lisa M.</strong> - "Great sound, and the Fishman preamp makes it even better!"</p>
     </div>
 
     <div class="review">
         <p style="color: #D4AF37; margin-bottom: 5px;">★★★★☆</p>
-        <p><strong>Chris T.</strong> - "Whether plugged in or played acoustically, the sound is crystal clear and powerful!"</p>
+        <p><strong>Alex R.</strong> - "Beautiful finish and comfortable to play."</p>
     </div>
 </section>
     <footer>
@@ -125,6 +126,5 @@ content="width=device-width, initial-scale=1.0">
     </div>
     </footer>
 <script src="../js/main.js"></script>
-
 </body>
 </html>

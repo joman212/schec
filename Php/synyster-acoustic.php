@@ -21,11 +21,11 @@ content="width=device-width, initial-scale=1.0">
   <a href="../html/products.html">Guitars</a>
   <a href="../html/Accessories.html">Accessories</a>
   <a href="../html/about.html">About</a>
-  <a href="../html/support.html">Support</a>
+  <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>
   <a href="../php/login.php">Sign In</a>
   
-  <a href="../html/cart.html" class="oc-cart">
+  <a href="../php/cart.php" class="oc-cart">
     <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
@@ -46,44 +46,47 @@ content="width=device-width, initial-scale=1.0">
         <input type="radio" id="img16" name="gallery">
 
         <div class="main-image">
-            <img src="../images/amp1.png" alt="Synyster standard">
+            <img src="../images/synyster-acoustic.avif" alt="Synyster standard">
         </div>
         <div class="thumbnails">
             <label for="img13">
-                <img src="../images/amp1.png" alt="AMP">
+                <img src="../images/synyster-acoustic.avif" alt="Synyster">
             </label>
             <label for="img14">
-                <img src="../images/amp2.jpeg" alt="AMP Front View">
+                <img src="../images/synyster-acoustic2.avif" alt="Synyster Front View">
             </label>
             <label for="img15">
-                <img src="../images/amp3.jpeg" alt="AMP Back View">
+                <img src="../images/synyster-acoustic3.avif" alt="Synyster Side View">
+            </label>
+            <label for="img16">
+                <img src="../images/synyster-acoustic4.avif" alt="Synyster Back View">
             </label>
         </div>
     </div>
         <div class="details">
-            <h1 class="itemName" class="itemName">SG-22 Signature Tube Amp & Cab by Synyster Gates</h1>
-            <h4>Trans Celestial White</h4>
-            <p> the SG-22 brings its authenticity into the digital age.</p>
-            <p class="price">$<span class="itemPrice">1,199</span>.00</p>
+            <h1 class="itemName" class="itemName">Synyster Gates 'SYN GA SC' Acoustic</h1>
+            <h4>Trans Black Burst Satin</h4>
+            <p>A premium acoustic guitar designed with Synyster Gates' signature look.</p>
+            <p class="price">$<span class="itemPrice">559</span>.00</p>
             <h6>Specifications:</h6>
             <ul>
-    <li>Channels: Clean / Crunch / Lead w/ Independent Gain, Volume, Tone Controls</li>
-    <li>Reverb: Spring Reverb w/ Depth Control</li>
-    <li>Outputs: 4Ω / 8Ω / 16Ω Speaker Outputs, XLR Direct Out</li>
-    <li>Dimensions: Head: 24"W x 10"H x 10"D | Cab: 30"W x 28"H x 16"D</li>
-    <li>Weight: Head: 45 lbs | Cab: 75 lbs (with speakers)</li>
-    <li>Includes: Heavy-duty Cover, Footswitch, Premium Speaker Cable</li>
+                <li>Solid Spruce Top with Mahogany back and sides</li>
+                <li>Fishman Presys+ preamp system</li>
+                <li>Rosewood fingerboard with custom inlays</li>
+                <li>25.5" scale length</li>
+                <li>Gloss Black finish with gold hardware</li>
             </ul>
             <section class="gates">
     <img src="../images/gates.avif" alt="Synyster Gates Signature">
 </section>
 
-    <button class="add-to-cart btn" disabled style="background:#555;color:#888;cursor:not-allowed;opacity:0.7;">
-        SOLD OUT
-    </button>
-    <div style="margin-top:15px;">
-        <a href="./html/Contact.html" class="btn" style="background:#1A2238;color:#E76E24;border:2px solid #E76E24;">🔔 Notify When Available</a>
-    </div>
+    <button class="add-to-cart btn" 
+    data-id="synyster-acoustic" 
+    data-name="Synyster Gates 'SYN GA SC' Acoustic" 
+    data-price="559.00" 
+    data-image="../images/synyster-acoustic.avif">
+    Add to Cart
+</button>
         </div>
     </section>
 
@@ -91,15 +94,15 @@ content="width=device-width, initial-scale=1.0">
     <h2>Customer Reviews</h2>
     <div class="review">
         <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
-        <p><strong>Mike T.</strong> - "Incredible tube tone! The best amp I've ever owned."</p>
+        <p><strong>John D.</strong> - "Amazing tone and quality! The best acoustic I’ve ever owned."</p>
     </div>
     <div class="review">
         <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
-        <p><strong>Sarah K.</strong> - "Great sound, and the Celestion speakers make it even better!"</p>
+        <p><strong>Lisa M.</strong> - "Great sound, and the Fishman preamp makes it even better!"</p>
     </div>
     <div class="review">
-        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★☆</p>
-        <p><strong>David L.</strong> - "Beautiful finish and solid build quality."</p>
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
+        <p><strong>Alex R.</strong> - "Beautiful finish and comfortable to play."</p>
     </div>
 </section>
 

@@ -21,11 +21,11 @@ content="width=device-width, initial-scale=1.0">
   <a href="../html/products.html">Guitars</a>
   <a href="../html/Accessories.html">Accessories</a>
   <a href="../html/about.html">About</a>
-  <a href="../html/support.html">Support</a>
+  <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>
   <a href="../php/login.php">Sign In</a>
   
-  <a href="../html/cart.html" class="oc-cart">
+  <a href="../php/cart.php" class="oc-cart">
     <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
@@ -40,73 +40,78 @@ content="width=device-width, initial-scale=1.0">
 
     <section class="product-details">
         <div class="image-gallery">
-        <input type="radio" id="img5" name="gallery" checked>
-        <input type="radio" id="img6" name="gallery">
-        <input type="radio" id="img7" name="gallery">
-        <input type="radio" id="img8" name="gallery">
+        <input type="radio" id="img13" name="gallery" checked>
+        <input type="radio" id="img14" name="gallery">
+        <input type="radio" id="img15" name="gallery">
+        <input type="radio" id="img16" name="gallery">
 
         <div class="main-image">
-            <img src="../images/Synyster-custom.avif" alt="Synyster standard">
+            <img src="../images/Poet1.png" alt="Synyster standard">
         </div>
         <div class="thumbnails">
-            <label for="img5">
-                <img src="../images/synyster-custom.avif" alt="Synyster">
+            <label for="img13">
+                <img src="../images/Poet1.png" alt="Poet">
             </label>
-            <label for="img6">
-                <img src="../images/synyster-custom2.avif" alt="Synyster Front View">
+            <label for="img14">
+                <img src="../images/Poet2.png" alt="Poet Front View">
             </label>
-            <label for="img7">
-                <img src="../images/synyster-custom3.avif" alt="Synyster Side View">
+            <label for="img15">
+                <img src="../images/Poet3.png" alt="Poet Side View">
             </label>
-            <label for="img8">
-                <img src="../images/synyster-custom4.avif" alt="Synyster Back View">
+            <label for="img16">
+                <img src="../images/Poet4.png" alt="Poet Back View">
+            </label>
+                        <label for="img16">
+                <img src="../images/Poet5.jpeg" alt="Synyster Gates with Guitars">
             </label>
         </div>
     </div>
         <div class="details">
-            <h1 class="itemName" class="itemName">Synyster Custom</h1>
-            <h4>Gloss Black with Silver Pinstripes</h4>
-            <p>The Synyster Custom guitar offers a bold, aggressive sound.</p>
-            <p class="price">$<span class="itemPrice">1,399</span>.00</p>
-            <h3>Specifications:</h3>
-            <ul>
-                <li>Mahogany body with Gloss Black finish</li>
-                <li>Seymour Duncan Invader pickups</li>
-                <li>Floyd Rose 1500 bridge</li>
-                <li>Ebony fingerboard with "SYN" inlays</li>
-            </ul>
+            <h1 class="itemName" class="itemName">Synyster Gates Limited Edition, (D)eath of a Poet</h1>
+            <h4>Bone Spatter W/ Pin Striped Decal</h4>
+            <p> Hand-painted by Synyster Gates for a one-of-a-kind collectible. Own a piece of history with 100% guarantee of authenticity. </p>
+    <p class="price">$<span class="itemPrice">5,999</span>.00</p>
+
+            <h6>Specifications:</h6>
+<ul>
+    <li>Limited Edition // Only 30 produced worldwide + Blockchain Certificate of Authenticity</li>
+    <li>Mahogany Body w/ Mahogany Top, Black Binding & Hand-painted Bone Spatter Finish</li>
+    <li>Schecter USA Synyster Gates Signature Humbucker + Sustainiac® Pickup System</li>
+    <li>Ebony Fretboard w/ Pearloid 'Syn' & 'Deathbat' at 12th Fret + Glow In The Dark Side Dots</li>
+    <li>25.5" Scale w/ Ultra Thin 'C' Neck Profile & Floyd Rose 1500 Series Hardware</li>
+</ul>
             <section class="gates">
     <img src="../images/gates.avif" alt="Synyster Gates Signature">
 </section>
-        <div class="price">$1,399.00</div>
 
-            <button class="add-to-cart btn" 
-    data-id="synyster-custom" 
-    data-name="Synyster Custom" 
-    data-price="1399.00" 
-    data-image="../images/synyster-custom.avif">
-    Add to Cart
-</button>
-        </div>
+    <button class="add-to-cart btn" disabled style="background:#555;color:#888;cursor:not-allowed;opacity:0.7;">
+        SOLD OUT
+    </button>
+    <div style="margin-top:15px;">
+        <a href="../html/Contact.html" class="btn" style="background:#1A2238;color:#E76E24;border:2px solid #E76E24;">🔔 Notify When Available</a>
+    </div>
+        <p style="margin-top:20px;font-size:0.9rem;color:#888;font-style:italic;">
+        This limited edition guitar was produced in a run of only 30 units worldwide. All units have been claimed.
+    </p>
+</div>
     </section>
+
 <section class="reviews">
     <h2>Customer Reviews</h2>
-
     <div class="review">
         <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
         <p><strong>John D.</strong> - "Amazing tone and quality! The best acoustic I’ve ever owned."</p>
     </div>
-    
     <div class="review">
         <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
         <p><strong>Lisa M.</strong> - "Great sound, and the Fishman preamp makes it even better!"</p>
     </div>
-
     <div class="review">
-        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★☆</p>
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
         <p><strong>Alex R.</strong> - "Beautiful finish and comfortable to play."</p>
     </div>
 </section>
+
     <footer>
         <p>&copy; 2026 Schecter Guitars. All rights reserved.</p>
         <div class="social-media-icons">
@@ -125,6 +130,7 @@ content="width=device-width, initial-scale=1.0">
     </div>
     </footer>
 <script src="../js/main.js"></script>
+
 
 </body>
 </html>

@@ -21,11 +21,11 @@ content="width=device-width, initial-scale=1.0">
   <a href="../html/products.html">Guitars</a>
   <a href="../html/Accessories.html">Accessories</a>
   <a href="../html/about.html">About</a>
-  <a href="../html/support.html">Support</a>
+  <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>
   <a href="../php/login.php">Sign In</a>
   
-  <a href="../html/cart.html" class="oc-cart">
+  <a href="../php/cart.php" class="oc-cart">
     <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
@@ -37,77 +37,72 @@ content="width=device-width, initial-scale=1.0">
     </div>
     <span style="font-size:30px;cursor:pointer;color:#fff;margin-right:15px;" onclick="openNav()">&#9776;</span>
   </header>
+
     <section class="product-details">
         <div class="image-gallery">
-        <input type="radio" id="img9" name="gallery" checked>
-        <input type="radio" id="img10" name="gallery">
-        <input type="radio" id="img11" name="gallery">
-        <input type="radio" id="img12" name="gallery">
+        <input type="radio" id="img13" name="gallery" checked>
+        <input type="radio" id="img14" name="gallery">
+        <input type="radio" id="img15" name="gallery">
+        <input type="radio" id="img16" name="gallery">
 
         <div class="main-image">
-            <img src="../images/synyster-custom-headless.avif" alt="Synyster standard">
+            <img src="../images/amp1.png" alt="Synyster standard">
         </div>
         <div class="thumbnails">
-            <label for="img9">
-                <img src="../images/synyster-custom-headless.avif" alt="Synyster">
+            <label for="img13">
+                <img src="../images/amp1.png" alt="AMP">
             </label>
-            <label for="img10">
-                <img src="../images/synyster-custom-headless2.avif" alt="Synyster Front View">
+            <label for="img14">
+                <img src="../images/amp2.jpeg" alt="AMP Front View">
             </label>
-            <label for="img11">
-                <img src="../images/synyster-custom-headless3.avif" alt="Synyster Side View">
-            </label>
-            <label for="img12">
-                <img src="../images/synyster-custom-headless4.avif" alt="Synyster Back View">
+            <label for="img15">
+                <img src="../images/amp3.jpeg" alt="AMP Back View">
             </label>
         </div>
     </div>
         <div class="details">
-            <h1 class="itemName" class="itemName">Synyster Gates 7 Headless</h1>
-            <h4>Oak Green Metallic</h4>
-            <p>A revolutionary 7-string headless guitar designed for modern shredders.</p>
-            <p class="price">$<span class="itemPrice">2,299</span>.00</p>
-            <h3>Specifications:</h3>
+            <h1 class="itemName" class="itemName">SG-22 Signature Tube Amp & Cab by Synyster Gates</h1>
+            <h4>Trans Celestial White</h4>
+            <p> the SG-22 brings its authenticity into the digital age.</p>
+            <p class="price">$<span class="itemPrice">1,199</span>.00</p>
+            <h6>Specifications:</h6>
             <ul>
-                <li>Mahogany body with Maple top</li>
-                <li>Seymour Duncan Invader pickups</li>
-                <li>Evertune Bridge for perfect tuning stability</li>
-                <li>Ebony fingerboard with Syn inlays</li>
-                <li>24 Extra Jumbo Stainless Steel Frets</li>
-                <li>Ultra-thin C neck profile</li>
+    <li>Channels: Clean / Crunch / Lead w/ Independent Gain, Volume, Tone Controls</li>
+    <li>Reverb: Spring Reverb w/ Depth Control</li>
+    <li>Outputs: 4Ω / 8Ω / 16Ω Speaker Outputs, XLR Direct Out</li>
+    <li>Dimensions: Head: 24"W x 10"H x 10"D | Cab: 30"W x 28"H x 16"D</li>
+    <li>Weight: Head: 45 lbs | Cab: 75 lbs (with speakers)</li>
+    <li>Includes: Heavy-duty Cover, Footswitch, Premium Speaker Cable</li>
             </ul>
             <section class="gates">
     <img src="../images/gates.avif" alt="Synyster Gates Signature">
 </section>
-        <div class="price">$2,299.00</div>
 
-            <button class="add-to-cart btn" 
-    data-id="synyster-custom-headless" 
-    data-name="Synyster Gates 7 Headless" 
-    data-price="2299.00" 
-    data-image="../images/synyster-custom-headless.avif">
-    Add to Cart
-</button>
+    <button class="add-to-cart btn" disabled style="background:#555;color:#888;cursor:not-allowed;opacity:0.7;">
+        SOLD OUT
+    </button>
+    <div style="margin-top:15px;">
+        <a href="./html/Contact.html" class="btn" style="background:#1A2238;color:#E76E24;border:2px solid #E76E24;">🔔 Notify When Available</a>
+    </div>
         </div>
     </section>
-    <section class="reviews">
-        <h2>Customer Reviews</h2>
 
-        <div class="review">
-            <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
-            <p><strong>James H.</strong> - "Incredible sustain and tuning stability! Best 7-string I've played."</p>
-        </div>
+<section class="reviews">
+    <h2>Customer Reviews</h2>
+    <div class="review">
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
+        <p><strong>Mike T.</strong> - "Incredible tube tone! The best amp I've ever owned."</p>
+    </div>
+    <div class="review">
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
+        <p><strong>Sarah K.</strong> - "Great sound, and the Celestion speakers make it even better!"</p>
+    </div>
+    <div class="review">
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★☆</p>
+        <p><strong>David L.</strong> - "Beautiful finish and solid build quality."</p>
+    </div>
+</section>
 
-        <div class="review">
-            <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
-            <p><strong>Mike R.</strong> - "Headless design makes it so comfortable. Perfect for long gigs!"</p>
-        </div>
-
-        <div class="review">
-            <p style="color: #D4AF37; margin-bottom: 5px;">★★★★☆</p>
-            <p><strong>Sarah T.</strong> - "The Seymour Duncan Invaders are absolute monsters. Killer tone!"</p>
-        </div>
-    </section>
     <footer>
         <p>&copy; 2026 Schecter Guitars. All rights reserved.</p>
         <div class="social-media-icons">

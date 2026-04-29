@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,11 +22,11 @@ content="width=device-width, initial-scale=1.0">
   <a href="../html/products.html">Guitars</a>
   <a href="../html/Accessories.html">Accessories</a>
   <a href="../html/about.html">About</a>
-  <a href="../html/support.html">Support</a>
+  <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>
   <a href="../php/login.php">Sign In</a>
   
-  <a href="../html/cart.html" class="oc-cart">
+  <a href="../php/cart.php" class="oc-cart">
     <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
@@ -40,40 +41,79 @@ content="width=device-width, initial-scale=1.0">
 <?php
 session_start();
 if(!isset($_SESSION["user_id"])) {
-    echo"Error. Please login first.<br>";
-    echo"<a href='login.php'>Go to Login</a>";
-    die();
+    header("Location: login.php");
+    exit();
 }
 
-$conn= mysqli_connect("localhost","root","","schecter_db");
-if($conn==TRUE) {} else { echo"Error. Connection failed!<br>"; die(); }
-?>
-<div class="admin-wrapper">
-    <h2>My Account</h2>
-    <p>Welcome, <?php echo $_SESSION["user_name"]; ?>!</p>
-    <p>Email: <?php echo $_SESSION["user_email"]; ?></p>
-    <a href="logout.php">Logout</a> | <a href="index.html">Back to Home</a>
-    <hr>
+$conn = mysqli_connect("localhost","root","","schecter_db");
+if($conn == TRUE) {} else { echo "Error. Connection failed!<br>"; die(); }
 
-    <h3>Your Cart</h3>
+// ✅ HANDLE REMOVE FROM CART (if remove button clicked)
+if(isset($_GET["remove_id"])) {
+    $cart_id = $_GET["remove_id"];
+    $stmt = "DELETE FROM`cart` WHERE`id`='$cart_id' AND`user_id`='".$_SESSION["user_id"]."'";
+    $result = mysqli_query($conn, $stmt);
+    $remove_msg = ($result != FALSE) ? "✅ Item removed." : "Error removing item.";
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart - Schecter</title>
+    <link rel="stylesheet" href="Css/style.css">
+    <link rel="icon" href="Images/icon.ico">
+</head>
+<body>
+
+<div class="page-wrapper">
+    <h1 class="page-title">My Cart</h1>
+    <p>Welcome, <?php echo $_SESSION["user_name"]; ?>!</p>
+    
+    <div class="form-links">
+        <a href="products.php">Continue Shopping</a> | 
+        <a href="logout.php">Logout</a>
+    </div>
+    
+    <!-- Remove Message -->
+    <?php if(isset($remove_msg)): ?>
+        <div class="message-box success"><?php echo $remove_msg; ?></div>
+    <?php endif; ?>
+    
+    <hr>
+    <h3>Your Items</h3>
     <?php
-    $user_id=$_SESSION["user_id"];
-    $stmt="SELECT * FROM`cart` WHERE`user_id`='$user_id'";
-    $result= mysqli_query($conn,$stmt);
-    if($result!=FALSE && mysqli_num_rows($result)>0) {
-        echo"<table border='1'><tr><th>Product ID</th><th>Quantity</th><th>Added At</th></tr>";
-        while($row=mysqli_fetch_assoc($result)) {
-            echo"<tr>
-                <td>".$row["product_id"]."</td>
+    $user_id = $_SESSION["user_id"];
+    
+    // JOIN cart with products to show details (PDF pattern)
+    $stmt = "SELECT c.*, p.name, p.price, p.image FROM`cart` c 
+             INNER JOIN`products` p ON c.product_id = p.id 
+             WHERE c.user_id = '$user_id'";
+    $result = mysqli_query($conn, $stmt);
+    
+    if($result != FALSE && mysqli_num_rows($result) > 0) {
+        echo "<table border='1'><tr><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th>Action</th></tr>";
+        $total = 0;
+        while($row = mysqli_fetch_assoc($result)) {
+            $subtotal = $row["price"] * $row["quantity"];
+            $total += $subtotal;
+            echo "<tr>
+                <td><img src='".$row["image"]."' style='width:50px;height:50px;object-fit:cover;'> ".$row["name"]."</td>
+                <td>$".$row["price"]."</td>
                 <td>".$row["quantity"]."</td>
-                <td>".$row["added_at"]."</td>
+                <td>$".number_format($subtotal, 2)."</td>
+                <td><a href='account.php?remove_id=".$row["id"]."'>Remove</a></td>
             </tr>";
         }
-        echo"</table>";
+        echo "<tr><td colspan='3' style='text-align:right;'><strong>Total:</strong></td><td colspan='2'><strong>$".number_format($total, 2)."</strong></td></tr>";
+        echo "</table>";
+        echo "<br><input type='button' value='Proceed to Checkout' onclick=\"alert('Checkout feature coming soon!')\" style='background:#c41e3a;color:white;padding:12px 20px;border:none;border-radius:5px;cursor:pointer;'>";
     } else {
-        echo"Your cart is empty.";
+        echo "<p>Your cart is empty. <a href='products.php'>Start shopping</a></p>";
     }
     ?>
 </div>
+
 </body>
 </html>

@@ -21,11 +21,11 @@ content="width=device-width, initial-scale=1.0">
   <a href="../html/products.html">Guitars</a>
   <a href="../html/Accessories.html">Accessories</a>
   <a href="../html/about.html">About</a>
-  <a href="../html/support.html">Support</a>
+  <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>
   <a href="../php/login.php">Sign In</a>
   
-  <a href="../html/cart.html" class="oc-cart">
+  <a href="../php/cart.php" class="oc-cart">
     <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
@@ -39,30 +39,29 @@ content="width=device-width, initial-scale=1.0">
   </header>
 
 <?php
-    $conn= mysqli_connect("localhost","root","","schecter_db"); 
-if($conn==TRUE) {
-} else {
-    echo"Error. Connection failed!<br>"; 
+session_start();
+if(!isset($_SESSION["user_id"])) {
+    echo"Error. Please login first.<br>";
+    echo"<a href='login.php'>Go to Login</a>";
     die();
 }
-session_start();
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $user_id=$_SESSION["user_id"];
-    $product_id=$_POST["product_id"]; 
-    $quantity=$_POST["quantity"]; 
-    
-    include 'db_connect.php';
-    
-    $stmt="INSERT INTO`cart`(`user_id`,`product_id`,`quantity`) VALUES('$user_id','$product_id','$quantity')"; 
-    $result= mysqli_query($conn,$stmt); 
-    if($result==FALSE) {
-        echo"Error. Item was not added to cart.<br>";
-    } else {
-        echo"Item added to cart successfully!<br>";
-        echo"<a href='index.html'>Continue Shopping</a>";
-        die();
-    }
+
+// Handle Remove from Cart (if your HTML has a ?remove_id= link)
+if(isset($_GET["remove_id"])) {
+    $conn= mysqli_connect("localhost","root","","schecter_db");
+    if($conn==TRUE) {} else { echo"Error. Connection failed!<br>"; die(); }
+    $cart_id=$_GET["remove_id"];
+    $stmt="DELETE FROM`cart` WHERE`id`='$cart_id' AND`user_id`='".$_SESSION["user_id"]."'";
+    $result= mysqli_query($conn,$stmt);
 }
+
+// Fetch cart items for display
+$conn= mysqli_connect("localhost","root","","schecter_db");
+if($conn==TRUE) {} else { echo"Error. Connection failed!<br>"; die(); }
+
+$user_id=$_SESSION["user_id"];
+$stmt="SELECT c.id, c.quantity, p.name, p.price, p.image FROM`cart` c INNER JOIN`products` p ON c.product_id=p.id WHERE c.user_id='$user_id'";
+$cart_result= mysqli_query($conn,$stmt);
 ?>
 
     <footer>

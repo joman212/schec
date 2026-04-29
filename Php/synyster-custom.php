@@ -21,11 +21,11 @@ content="width=device-width, initial-scale=1.0">
   <a href="../html/products.html">Guitars</a>
   <a href="../html/Accessories.html">Accessories</a>
   <a href="../html/about.html">About</a>
-  <a href="../html/support.html">Support</a>
+  <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>
   <a href="../php/login.php">Sign In</a>
   
-  <a href="../html/cart.html" class="oc-cart">
+  <a href="../php/cart.php" class="oc-cart">
     <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
@@ -40,56 +40,56 @@ content="width=device-width, initial-scale=1.0">
 
     <section class="product-details">
         <div class="image-gallery">
-        <input type="radio" id="img21" name="gallery" checked>
-        <input type="radio" id="img22" name="gallery">
-        <input type="radio" id="img23" name="gallery">
-        <input type="radio" id="img24" name="gallery">
+        <input type="radio" id="img5" name="gallery" checked>
+        <input type="radio" id="img6" name="gallery">
+        <input type="radio" id="img7" name="gallery">
+        <input type="radio" id="img8" name="gallery">
 
         <div class="main-image">
-            <img src="../images/Synyster-standard.avif" alt="Synyster standard">
+            <img src="../images/Synyster-custom.avif" alt="Synyster standard">
         </div>
         <div class="thumbnails">
-            <label for="img17">
-                <img src="../images/synyster-standard.avif" alt="Synyster">
+            <label for="img5">
+                <img src="../images/synyster-custom.avif" alt="Synyster">
             </label>
-            <label for="img18">
-                <img src="../images/synyster-standard2.avif" alt="Synyster Front View">
+            <label for="img6">
+                <img src="../images/synyster-custom2.avif" alt="Synyster Front View">
             </label>
-            <label for="img19">
-                <img src="../images/synyster-standard3.avif" alt="Synyster Side View">
+            <label for="img7">
+                <img src="../images/synyster-custom3.avif" alt="Synyster Side View">
             </label>
-            <label for="img20">
-                <img src="../images/synyster-standard4.avif" alt="Synyster Back View">
+            <label for="img8">
+                <img src="../images/synyster-custom4.avif" alt="Synyster Back View">
             </label>
         </div>
     </div>
         <div class="details">
-            <h1 class="itemName" class="itemName">Synyster Gates Standard</h1>
+            <h1 class="itemName" class="itemName">Synyster Custom</h1>
             <h4>Gloss Black with Silver Pinstripes</h4>
-            <p>A high-performance guitar designed for rock and metal players.</p>
-            <p class="price">$<span class="itemPrice">949</span>.00</p>
+            <p>The Synyster Custom guitar offers a bold, aggressive sound.</p>
+            <p class="price">$<span class="itemPrice">1,399</span>.00</p>
             <h3>Specifications:</h3>
             <ul>
                 <li>Mahogany body with Gloss Black finish</li>
-                <li>Duncan Designed HB-108 Detonator pickups</li>
-                <li>Floyd Rose Special bridge</li>
-                <li>Rosewood fingerboard with pearloid inlays</li>
-                <li>24 Extra Jumbo Frets</li>
+                <li>Seymour Duncan Invader pickups</li>
+                <li>Floyd Rose 1500 bridge</li>
+                <li>Ebony fingerboard with "SYN" inlays</li>
             </ul>
             <section class="gates">
     <img src="../images/gates.avif" alt="Synyster Gates Signature">
 </section>
+        <div class="price">$1,399.00</div>
 
-<button class="add-to-cart btn" 
-    data-id="Synyster-standard" 
-    data-name="Synyster Standard" 
-    data-price="949.00" 
-    data-image="../images/Synyster-standard.avif">
+            <button class="add-to-cart btn" 
+    data-id="synyster-custom" 
+    data-name="Synyster Custom" 
+    data-price="1399.00" 
+    data-image="../images/synyster-custom.avif">
     Add to Cart
 </button>
         </div>
     </section>
-    <section class="reviews">
+<section class="reviews">
     <h2>Customer Reviews</h2>
 
     <div class="review">
