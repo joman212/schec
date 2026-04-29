@@ -1,40 +1,22 @@
-<?php
-session_start();
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if(!isset($_SESSION["user_id"])) {
-        echo"Error. Please login first to add items to cart.<br>";
-        echo"<a href='login.php'>Go to Login</a>";
-        die();
-    }
-    
-    $user_id=$_SESSION["user_id"];
-    $product_id=$_POST["product_id"];
-    $quantity=$_POST["quantity"];
-    
-    $conn= mysqli_connect("localhost","root","","schecter_db");
-    if($conn==TRUE) {
-    } else {
-        echo"Error. Connection failed!<br>";
-        die();
-    }
-    
-    $stmt="SELECT * FROM`cart` WHERE`user_id`='$user_id' AND`product_id`='$product_id'";
-    $result= mysqli_query($conn,$stmt);
-    
-    if($result!=FALSE && mysqli_num_rows($result)>0) {
-        $stmt="UPDATE`cart` SET`quantity`=`quantity`+'$quantity' WHERE`user_id`='$user_id' AND`product_id`='$product_id'";
-        $result= mysqli_query($conn,$stmt);
-        if($result==FALSE) echo"Error. Cart was not updated.<br>";
-        else echo"Item quantity updated in cart!<br>";
-    } else {
-        $stmt="INSERT INTO`cart`(`user_id`,`product_id`,`quantity`) VALUES('$user_id','$product_id','$quantity')";
-        $result= mysqli_query($conn,$stmt);
-        if($result==FALSE) echo"Error. Item was not added to cart.<br>";
-        else echo"Item added to cart successfully!<br>";
-    }
-}
-?><!DOCTYPE html>
+<?php session_start();
+if(isset($_SESSION["user_id"])): ?>
+    <form action="../php/cart.php" method="post">
+        <input type="hidden" name="action"     value="add">
+        <input type="hidden" name="product_id" value="2">
+        <label>Quantity:
+            <input type="number" name="quantity" value="1" min="1" max="15"
+                   style="width:60px;margin:0 10px;">
+        </label>
+        <button type="submit" class="add-to-cart btn">Add to Cart</button>
+    </form>
+<?php else: ?>
+    <a href="../php/login.php"
+       style="display:inline-block;background:#c41e3a;color:white;
+              padding:12px 20px;border-radius:5px;text-decoration:none;">
+        Sign In to Add to Cart
+    </a>
+<?php endif; ?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -118,9 +100,7 @@ content="width=device-width, initial-scale=1.0">
 
 <button class="add-to-cart btn" 
     data-id="Synyster-standard" 
-    data-name="Synyster Standard" 
-    data-price="949.00" 
-    data-image="../images/Synyster-standard.avif">
+    ...>
     Add to Cart
 </button>
 <input type="hidden" name="product_id" value="2">

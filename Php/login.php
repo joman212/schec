@@ -1,49 +1,46 @@
 <?php
-$conn= mysqli_connect("localhost","root","","schecter_db"); 
-if($conn==TRUE) {
-} else {
-    echo"Error. Connection failed!<br>"; 
-    die();
-}
-session_start();
+session_start(); // ← MUST be first, before anything else
+
+$conn = mysqli_connect("localhost","root","","schecter_db");
+if(!$conn) { echo "Error. Connection failed!<br>"; die(); }
 
 if(isset($_GET["logout"])) {
     session_destroy();
-    echo"Logged out successfully.<br>";
-    echo"<a href='login.php'>Login Again</a>";
-    die();
+    header("Location: login.php");
+    exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email=$_POST["email"]; 
-    $password=$_POST["password"]; 
-    
+if($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email    = $_POST["email"];
+    $password = $_POST["password"];
+
+    // Admin shortcut
     if($email == "admin@schecter.com" && $password == "SchecterAdmin123") {
-        $_SESSION["is_admin"] = TRUE;
+        $_SESSION["user_id"]    = 0;
         $_SESSION["user_email"] = $email;
-        $_SESSION["user_name"] = "Joey Joestar";
-        echo"Admin login successful!<br>";
+        $_SESSION["user_name"]  = "Admin";
+        $_SESSION["is_admin"]   = TRUE;
         header("Location: admin_dashboard.php");
         exit();
     }
-    
-    include 'db_connect.php';
-    $stmt="SELECT * FROM`users` WHERE`email`='$email' AND`password`='$password'"; 
-    $result= mysqli_query($conn,$stmt); 
-    
-    if($result==FALSE) {
-        echo"Error. Login failed.<br>";
-    } else {
-        $user=mysqli_fetch_assoc($result);
-        if($user) {
-            $_SESSION["user_id"] = $user["id"];
+
+    // Regular user — fetch by email only, then verify bcrypt password
+    $stmt   = "SELECT * FROM `users` WHERE `email`='$email'";
+    $result = mysqli_query($conn, $stmt);
+
+    if($result && mysqli_num_rows($result) > 0) {
+        $user = mysqli_fetch_assoc($result);
+        if(password_verify($password, $user["password"])) {
+            $_SESSION["user_id"]    = $user["id"];
             $_SESSION["user_email"] = $user["email"];
-            echo"Login successful!<br>";
+            $_SESSION["user_name"]  = $user["first_name"]; // ← was never set before
             header("Location: account.php");
-            die();
+            exit();
         } else {
-            echo"Error. Invalid email or password.<br>";
+            $error = "Invalid email or password.";
         }
+    } else {
+        $error = "Invalid email or password.";
     }
 }
 ?>
@@ -87,7 +84,9 @@ content="width=device-width, initial-scale=1.0">
     <span style="font-size:30px;cursor:pointer;color:#fff;margin-right:15px;" onclick="openNav()">&#9776;</span>
   </header>
 
-
+<?php if(isset($error)): ?>
+    <p style="color:red;"><?php echo $error; ?></p>
+<?php endif; ?>
 <form action="login.php" method="post">
     Email<input type="text" name="email" required><br>
     Password<input type="password" name="password" required><br>
