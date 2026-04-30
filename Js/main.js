@@ -150,7 +150,7 @@
     const cart = getCart();
     
     if (cart.length === 0) {
-      container.innerHTML = '<div class="empty-cart"><p style="color:#E5E5E5">Your cart is empty.</p><p><a href="html/products.html" style="color:#E76E24">→ Continue Shopping</a></p></div>';
+      container.innerHTML = '<div class="empty-cart"><p style="color:#E5E5E5">Your cart is empty.</p><p><a href="products.html" style="color:#E76E24">Continue Shopping</a></p></div>';
       if (summary) summary.style.display = 'none';
       if (totalEl) totalEl.textContent = '0.00';
       window.updateCartBadge();
@@ -216,13 +216,14 @@
   }
 
   function attachListeners() {
-    document.querySelectorAll('.add-to-cart').forEach(btn => {
-      if (btn._attached) return;
-      btn._attached = true;
-      
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        const success = window.addToCart(
+document.querySelectorAll('.add-to-cart').forEach(btn => {
+  if (btn._attached) return;
+  btn._attached = true;
+  if (btn.dataset.productId) return;
+
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    const success = window.addToCart( ...
           this.dataset.id,
           this.dataset.name,
           this.dataset.price,
@@ -604,3 +605,19 @@ window.animateCarouselSlide = function(direction) {
     
   }, 300);
 };
+
+document.addEventListener('DOMContentLoaded', function() {
+  const hasSeenModal = sessionStorage.getItem('schecterModalSeen');
+  if (!hasSeenModal && document.getElementById('promoModal')) { // ← add this check
+    setTimeout(openModal, 1000);
+    sessionStorage.setItem('schecterModalSeen', 'true');
+  }
+});
+function init() {
+    attachListeners();
+    initImageGallery();
+    window.updateCartBadge();
+    if (document.getElementById('cartContainer') && !document.getElementById('cartContainer').dataset.db) {
+        window.renderCartDisplay();
+    }
+}

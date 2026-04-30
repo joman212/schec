@@ -4,14 +4,16 @@ session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name=$_POST["first_name"]; 
     $last_name=$_POST["last_name"]; 
-    $email=$_POST["email"]; 
-    $password=$_POST["password"]; 
-    $confirm_password=$_POST["confirm_password"]; 
-    
-    if($password!=$confirm_password) {
-        echo"Error. Passwords mismatch.<br>";
-        die();
-    }
+    $email=$_POST["email"];     
+$password         = $_POST["password"];
+$confirm_password = $_POST["confirm_password"];
+
+if ($password != $confirm_password) {
+    echo "Error. Passwords mismatch.<br>";
+    die();
+}
+
+$password = password_hash($password, PASSWORD_BCRYPT); // ← hash after check
     
     // ✅ INLINE DB CONNECTION (Replaces the missing include file)
     $conn= mysqli_connect("localhost","root","","schecter_db");
@@ -54,16 +56,19 @@ content="width=device-width, initial-scale=1.0">
     <img src="../images/logo.png" alt="Schecter Guitars" style="height:40px;width:auto;">
   </div>
   
-  <a href="../index.html">Home</a>
-  <a href="../html/products.html">Guitars</a>
-  <a href="../html/Accessories.html">Accessories</a>
-  <a href="../html/about.html">About</a>
-  <a href="../php/support.php">Support</a>
-  <a href="../php/Contact.php">Contact</a>
-  <a href="../php/login.php">Sign In</a>
+  <div class="oc-logo" style="padding:0 25px 20px;border-bottom:1px solid #333;margin-bottom:15px;">
+    <img src="../../images/logo.png" alt="Schecter Guitars" style="height:40px;width:auto;">
+  </div>
   
-  <a href="../php/cart.php" class="oc-cart">
-    <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
+  <a href="index.html">Home</a>
+  <a href="html/products.html">Guitars</a>
+  <a href="html/Accessories.html">Accessories</a>
+  <a href="html/about.html">About</a>
+  <a href="php/support.php">Support</a>
+  <a href="php/Contact.php">Contact</a>
+  <a href="php/login.php">Sign In</a>
+  <a href="html/cart.html" class="oc-cart">
+    <img src="images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
 </div>

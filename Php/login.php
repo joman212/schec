@@ -34,7 +34,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION["user_id"]    = $user["id"];
             $_SESSION["user_email"] = $user["email"];
             $_SESSION["user_name"]  = $user["first_name"]; // ← was never set before
-            header("Location: account.php");
+            header("Location: ../html/account.html");
             exit();
         } else {
             $error = "Invalid email or password.";
@@ -70,8 +70,7 @@ content="width=device-width, initial-scale=1.0">
   <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>
   <a href="../php/login.php">Sign In</a>
-  
-  <a href="../php/cart.php" class="oc-cart">
+  <a href="../html/cart.html" class="oc-cart">
     <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
