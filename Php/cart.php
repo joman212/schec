@@ -1,52 +1,61 @@
 <?php
-// ==========================================
-// ALL PHP LOGIC - STRICTLY AT THE TOP
-// ==========================================
 session_start();
 $conn = mysqli_connect("localhost", "root", "", "schecter_db");
 if (!$conn) { die("DB connection failed"); }
 
-$logged_in = isset($_SESSION['user_id']);
-$cart_items = [];
-$total = 0;
-
-// Handle Remove & Update via simple POST forms
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $logged_in) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json');
+    
+    if (!isset($_SESSION['user_id'])) {
+        echo json_encode(['success' => false, 'message' => 'not_logged_in']);
+        exit;
+    }
+    
     $user_id = (int)$_SESSION['user_id'];
+    $rawInput = file_get_contents('php://input');
+    $data = $rawInput ? json_decode($rawInput, true) : [];
+    $action = $data['action'] ?? '';
+    $product_id = isset($data['product_id']) ? (int)$data['product_id'] : 0;
     
-    if (isset($_POST['remove_item']) && isset($_POST['product_id'])) {
+    if ($action === 'fetch') {
+        $result = mysqli_query($conn, 
+            "SELECT c.quantity, p.id, p.name, p.price, p.image 
+             FROM cart c 
+             JOIN products p ON c.product_id = p.id 
+             WHERE c.user_id = $user_id"
+        );
+        $items = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $items[] = $row;
+        }
+        echo json_encode(['success' => true, 'items' => $items]);
+        exit;
+    }
+    
+    if ($action === 'remove' && $product_id > 0) {
         $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ? AND product_id = ?");
-        $stmt->bind_param('ii', $user_id, (int)$_POST['product_id']);
+        $stmt->bind_param('ii', $user_id, $product_id);
         $stmt->execute();
         $stmt->close();
+        echo json_encode(['success' => true]);
+        exit;
     }
     
-    if (isset($_POST['update_quantity']) && isset($_POST['product_id']) && isset($_POST['quantity'])) {
+    if ($action === 'update' && $product_id > 0 && isset($data['quantity'])) {
+        $quantity = max(1, (int)$data['quantity']);
         $stmt = $conn->prepare("UPDATE cart SET quantity = ? WHERE user_id = ? AND product_id = ?");
-        $stmt->bind_param('iii', max(1, (int)$_POST['quantity']), $user_id, (int)$_POST['product_id']);
+        $stmt->bind_param('iii', $quantity, $user_id, $product_id);
         $stmt->execute();
         $stmt->close();
+        echo json_encode(['success' => true]);
+        exit;
     }
     
-    // Redirect to prevent form resubmission
-    header('Location: cart.php');
+    echo json_encode(['success' => false, 'message' => 'Unknown action']);
     exit;
 }
 
-// Fetch cart items from database
-if ($logged_in) {
-    $result = mysqli_query($conn, 
-        "SELECT c.quantity, p.id, p.name, p.price, p.image 
-         FROM cart c 
-         JOIN products p ON c.product_id = p.id 
-         WHERE c.user_id = " . (int)$_SESSION['user_id']
-    );
-    while ($row = mysqli_fetch_assoc($result)) {
-        $row['subtotal'] = $row['price'] * $row['quantity'];
-        $total += $row['subtotal'];
-        $cart_items[] = $row;
-    }
-}
+$logged_in = isset($_SESSION['user_id']);
 mysqli_close($conn);
 ?>
 <!DOCTYPE html>

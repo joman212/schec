@@ -4,7 +4,6 @@
   if (window._schecterInitialized) return;
   window._schecterInitialized = true;
 
-  // ===== UTILITY FUNCTIONS =====
   function formatPrice(price) {
     return parseFloat(price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
@@ -30,7 +29,6 @@
     setTimeout(() => { element.style.display = 'none'; }, 5000);
   }
 
-  // ===== AUTH FUNCTIONS =====
   window.isLoggedIn = function() {
     return !!(localStorage.getItem('schecterCurrentUser') || 
               sessionStorage.getItem('schecterCurrentUser'));
@@ -53,7 +51,6 @@
     }
   };
 
-  // ===== DYNAMIC HEADER AUTH TOGGLE (Pure JS) =====
   window.updateDynamicHeader = function() {
     const isLoggedIn = window.isLoggedIn();
     const authLinks = document.querySelectorAll('header a[href*="login"], header a[href*="signup"], #authLink, .header-auth-link');
@@ -63,7 +60,6 @@
       if (href.includes('login.php') || href.includes('signup.php') || link.id === 'authLink' || link.classList.contains('header-auth-link')) {
         if (isLoggedIn) {
           link.textContent = 'My Account';
-          // Resolve path dynamically
           const basePath = window.location.pathname.includes('/html/') || window.location.pathname.includes('/php/') ? '../html/' : 'html/';
           link.href = basePath + 'account.html';
         } else {
@@ -75,7 +71,6 @@
     });
   };
 
-  // ===== NAVIGATION UPDATE =====
   window.updateAuthNav = function() {
     const user = window.getCurrentUser();
     
@@ -124,7 +119,6 @@
     });
   };
 
-  // ===== CART BADGE =====
   window.updateCartBadge = function() {
     const cart = getCart();
     const total = cart.reduce((sum, item) => sum + (parseInt(item.quantity) || 1), 0);
@@ -133,7 +127,6 @@
     });
   };
 
-  // ===== LOCAL CART OPERATIONS =====
   window.addToCart = function(id, name, price, image, quantity = 1) {
     if (!id || !name) return false;
     const numericPrice = parseFloat(price);
@@ -178,7 +171,6 @@
     window.updateCartBadge();
   };
 
-  // ===== RENDER CART DISPLAY (LocalStorage fallback) =====
   window.renderCartDisplay = function() {
     const container = document.getElementById('cartContainer');
     const summary = document.getElementById('cartSummary');
@@ -232,7 +224,6 @@
     window.updateCartBadge();
   };
 
-  // ===== UI INITIALIZATION =====
   function initImageGallery() {
     document.querySelectorAll('.image-gallery').forEach(gallery => {
       const mainImg = gallery.querySelector('.main-image img');
@@ -301,7 +292,6 @@
     if (document.getElementById('cartContainer')) window.renderCartDisplay(); 
   };
 
-  // ===== LOGIN FORM (LocalStorage auth) =====
   (function() {
     const form = document.getElementById('loginForm');
     const msg = document.getElementById('loginMessage');
@@ -347,7 +337,6 @@
     });
   })();
 
-  // ===== ADD TO CART WITH PHP DB INTEGRATION =====
   (function initProductCart() {
     const addToCartBtns = document.querySelectorAll('.add-to-cart');
     if (!addToCartBtns.length) return;
@@ -422,8 +411,6 @@
         btn.classList.add('loading');
         btn.disabled = true;
         
-        // POST to current page (Synyster-standard.php handles it)
-        // credentials: 'include' sends PHP session cookies automatically
         fetch(window.location.href, {
           method: 'POST',
           credentials: 'include',
@@ -442,7 +429,6 @@
             if (data.cart_count !== undefined) {
               updateBadge(data.cart_count);
             }
-            // Sync with localStorage for consistency
             var cart = getLocalCart();
             var existing = cart.find(function(i) { return String(i.id) === String(productId); });
             if (existing) {
@@ -467,7 +453,6 @@
             }, 1500);
             
           } else if (data && data.message === 'not_logged_in') {
-            // Fallback to localStorage if not logged in
             localAdd(btn);
             btn.classList.remove('loading');
           } else {
@@ -483,7 +468,6 @@
       });
     });
     
-    // Initialize badge from localStorage
     var localCart = getLocalCart();
     var localTotal = localCart.reduce(function(s, i) { return s + (i.quantity || 1); }, 0);
     if (localTotal > 0) {
@@ -491,7 +475,6 @@
     }
   })();
 
-  // ===== SIGNUP FORM =====
   (function() {
     const form = document.getElementById('signupForm');
     const msg = document.getElementById('signupMessage');
@@ -560,7 +543,6 @@
 
 })();
 
-// ===== ACCOUNT PAGE =====
 function initAccountPage() {
   if (!window.location.href.includes('account.html')) return;
   
@@ -652,12 +634,10 @@ function initAccountPage() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Run dynamic header on every page load
   if (typeof window.updateDynamicHeader === 'function') window.updateDynamicHeader();
   initAccountPage();
 });
 
-// ===== NAVIGATION & UI =====
 function openNav() {
   document.getElementById("myOffcanvasNav").style.width = "220px";
 }
@@ -698,7 +678,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// ===== CAROUSEL =====
 let slideIndex = 0;
 
 function showSlide(index) {
@@ -754,7 +733,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// ===== SCROLL ANIMATIONS =====
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -766,7 +744,6 @@ const observer = new IntersectionObserver((entries) => {
 document.querySelectorAll('.featured, .reviews, .bio, .featured-videos')
   .forEach(el => observer.observe(el));
 
-// ===== CAROUSEL ANIMATION =====
 window.animateCarouselSlide = function(direction) {
   const slides = document.querySelectorAll('.carousel-slide');
   const activeSlide = document.querySelector('.carousel-slide.active');

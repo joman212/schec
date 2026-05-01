@@ -3,10 +3,8 @@ session_start();
 $conn = mysqli_connect("localhost", "root", "", "schecter_db");
 if (!$conn) { die("Error. Connection failed!<br>"); }
 
-// Handle logout
 if (isset($_GET["logout"])) {
     session_destroy();
-    // Clear localStorage via JS on logout page
     echo '<!DOCTYPE html><html><head><meta charset="UTF-8">
     <script>
         localStorage.removeItem("schecterCurrentUser");
@@ -34,16 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($result && mysqli_num_rows($result) === 1) {
                 $user = mysqli_fetch_assoc($result);
 
-                // Verify password (supports both hashed and plain for dev)
                 if (password_verify($password, $user["password"]) || $password === $user["password"]) {
                     session_regenerate_id(true);
                     $_SESSION["user_id"]    = (int)$user["id"];
                     $_SESSION["user_email"] = $user["email"];
                     $_SESSION["user_name"]  = $user["first_name"];
                     $_SESSION["is_admin"]   = (bool)$user["is_admin"];
-
-                    // ✅ KEY FIX: Sync PHP session → localStorage via JS, then redirect
-                    // This ensures main.js knows the user is logged in after redirect
                     $redirect = $_SESSION["is_admin"] ? "admin_dashboard.php" : "../html/account.html";
                     echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Redirecting...</title></head><body><script>
                     localStorage.setItem("schecterCurrentUser", JSON.stringify({
