@@ -314,72 +314,9 @@
         showMessage(msg, 'Invalid email or password', 'error');
       }
     });
-  })();
 
-  (function() {
-    const form = document.getElementById('signupForm');
-    const msg = document.getElementById('signupMessage');
-    if (!form) return;
-    
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const firstName = document.getElementById('firstName').value.trim();
-      const lastName = document.getElementById('lastName').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      const terms = document.getElementById('terms').checked;
-      
-      if (!firstName || !lastName || !email || !password || !confirmPassword) {
-        showMessage(msg, 'Please fill in all fields', 'error');
-        return;
-      }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showMessage(msg, 'Please enter a valid email', 'error');
-        return;
-      }
-      if (password.length < 6) {
-        showMessage(msg, 'Password must be at least 6 characters', 'error');
-        return;
-      }
-      if (password !== confirmPassword) {
-        showMessage(msg, 'Passwords do not match', 'error');
-        return;
-      }
-      if (!terms) {
-        showMessage(msg, 'Please agree to the Terms of Service', 'error');
-        return;
-      }
-      
-      const users = JSON.parse(localStorage.getItem('schecterUsers')) || [];
-      if (users.find(u => u.email === email)) {
-        showMessage(msg, 'An account with this email already exists', 'error');
-        return;
-      }
-      
-      const newUser = {
-        id: Date.now().toString(),
-        firstName, lastName, email, password,
-        createdAt: new Date().toISOString(),
-        cart: []
-      };
-      users.push(newUser);
-      localStorage.setItem('schecterUsers', JSON.stringify(users));
-      
-      localStorage.setItem('schecterCurrentUser', JSON.stringify({
-        email: newUser.email,
-        name: firstName + ' ' + lastName,
-        id: newUser.id
-      }));
-      
-      showMessage(msg, 'Account created! Redirecting...', 'success');
-      setTimeout(() => { 
-        if (typeof window.updateAuthNav === 'function') window.updateAuthNav();
-        window.location.href = 'index.html'; 
-      }, 1000);
-    });
-  })();
+
+
 (function initProductCart() {
   const addToCartBtns = document.querySelectorAll('.add-to-cart');
   if (!addToCartBtns.length) return;
@@ -520,6 +457,73 @@
   }
   
 })();
+  })();
+
+  (function() {
+    const form = document.getElementById('signupForm');
+    const msg = document.getElementById('signupMessage');
+    if (!form) return;
+    
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const terms = document.getElementById('terms').checked;
+      
+      if (!firstName || !lastName || !email || !password || !confirmPassword) {
+        showMessage(msg, 'Please fill in all fields', 'error');
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showMessage(msg, 'Please enter a valid email', 'error');
+        return;
+      }
+      if (password.length < 6) {
+        showMessage(msg, 'Password must be at least 6 characters', 'error');
+        return;
+      }
+      if (password !== confirmPassword) {
+        showMessage(msg, 'Passwords do not match', 'error');
+        return;
+      }
+      if (!terms) {
+        showMessage(msg, 'Please agree to the Terms of Service', 'error');
+        return;
+      }
+      
+      const users = JSON.parse(localStorage.getItem('schecterUsers')) || [];
+      if (users.find(u => u.email === email)) {
+        showMessage(msg, 'An account with this email already exists', 'error');
+        return;
+      }
+      
+      const newUser = {
+        id: Date.now().toString(),
+        firstName, lastName, email, password,
+        createdAt: new Date().toISOString(),
+        cart: []
+      };
+      users.push(newUser);
+      localStorage.setItem('schecterUsers', JSON.stringify(users));
+      
+      localStorage.setItem('schecterCurrentUser', JSON.stringify({
+        email: newUser.email,
+        name: firstName + ' ' + lastName,
+        id: newUser.id
+      }));
+      
+      showMessage(msg, 'Account created! Redirecting...', 'success');
+      setTimeout(() => { 
+        if (typeof window.updateAuthNav === 'function') window.updateAuthNav();
+        window.location.href = 'index.html'; 
+      }, 1000);
+    });
+  })();
+
 })();
 
 function initAccountPage() {
