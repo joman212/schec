@@ -57,17 +57,17 @@
     
     document.querySelectorAll('#myOffcanvasNav a').forEach(function(link) {
       var href = link.getAttribute('href') || '';
-      if (href.indexOf('html/login.html') !== -1 || href.indexOf('html/signup.html') !== -1) {
+      if (href.indexOf('php/login.php') !== -1 || href.indexOf('php/signup.php') !== -1) {
         if (user) {
           link.textContent = 'My Account';
           link.href = 'html/account.html';
         } else {
-          if (href.indexOf('html/signup.html') !== -1) {
+          if (href.indexOf('php/signup.php') !== -1) {
             link.textContent = 'Sign Up';
-            link.href = 'html/signup.html';
+            link.href = 'php/signup.php';
           } else {
             link.textContent = 'Sign In';
-            link.href = 'html/login.html';
+            link.href = 'php/login.php';
           }
         }
         link.onclick = null;
@@ -82,7 +82,7 @@
         authLink.onclick = null;
       } else {
         authLink.textContent = 'Sign In';
-        authLink.href = 'html/login.html';
+        authLink.href = 'php/login.php';
         authLink.onclick = null;
       }
     }
@@ -150,7 +150,7 @@
     const cart = getCart();
     
     if (cart.length === 0) {
-      container.innerHTML = '<div class="empty-cart"><p style="color:#E5E5E5">Your cart is empty.</p><p><a href="products.html" style="color:#E76E24">Continue Shopping</a></p></div>';
+      container.innerHTML = '<div class="empty-cart"><p style="color:#E5E5E5">Your cart is empty.</p><p><a href="../html/products.html" style="color:#E76E24">Continue Shopping</a></p></div>';
       if (summary) summary.style.display = 'none';
       if (totalEl) totalEl.textContent = '0.00';
       window.updateCartBadge();
@@ -216,14 +216,13 @@
   }
 
   function attachListeners() {
-document.querySelectorAll('.add-to-cart').forEach(btn => {
-  if (btn._attached) return;
-  btn._attached = true;
-  if (btn.dataset.productId) return;
-
-  btn.addEventListener('click', function(e) {
-    e.preventDefault();
-    const success = window.addToCart( ...
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+      if (btn._attached) return;
+      btn._attached = true;
+      
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const success = window.addToCart(
           this.dataset.id,
           this.dataset.name,
           this.dataset.price,
@@ -367,7 +366,7 @@ function initAccountPage() {
   const user = window.getCurrentUser();
   
   if (!user) {
-    window.location.href = 'login.html';
+    window.location.href = 'login.php';
     return;
   }
   
@@ -406,7 +405,7 @@ function initAccountPage() {
     const userOrders = fullUser.orders || [];
     
     if (userOrders.length === 0) {
-      ordersList.innerHTML = '<p class="no-orders">No orders yet. <a href="products.html">Start shopping!</a></p>';
+      ordersList.innerHTML = '<p class="no-orders">No orders yet. <a href="../html/products.html">Start shopping!</a></p>';
     } else {
       let html = '';
       userOrders.slice(0, 3).forEach(order => {
@@ -605,19 +604,3 @@ window.animateCarouselSlide = function(direction) {
     
   }, 300);
 };
-
-document.addEventListener('DOMContentLoaded', function() {
-  const hasSeenModal = sessionStorage.getItem('schecterModalSeen');
-  if (!hasSeenModal && document.getElementById('promoModal')) {
-    setTimeout(openModal, 1000);
-    sessionStorage.setItem('schecterModalSeen', 'true');
-  }
-});
-function init() {
-    attachListeners();
-    initImageGallery();
-    window.updateCartBadge();
-    if (document.getElementById('cartContainer') && !document.getElementById('cartContainer').dataset.db) {
-        window.renderCartDisplay();
-    }
-}
