@@ -13,18 +13,15 @@ if ($password != $confirm_password) {
     die();
 }
 
-$password = password_hash($password, PASSWORD_BCRYPT); // ← hash after check
+$password = password_hash($password, PASSWORD_BCRYPT);
     
-    // ✅ INLINE DB CONNECTION (Replaces the missing include file)
     $conn= mysqli_connect("localhost","root","","schecter_db");
     if($conn==TRUE) {
-        // Connected successfully
     } else {
         echo"Error. Connection failed!<br>"; 
         die();
     }
     
-    // Insert new user
     $stmt="INSERT INTO`users`(`first_name`,`last_name`,`email`,`password`) VALUES('$first_name','$last_name','$email','$password')"; 
     $result= mysqli_query($conn,$stmt); 
     
@@ -60,15 +57,16 @@ content="width=device-width, initial-scale=1.0">
     <img src="../../images/logo.png" alt="Schecter Guitars" style="height:40px;width:auto;">
   </div>
   
-  <a href="index.html">Home</a>
-  <a href="html/products.html">Guitars</a>
-  <a href="html/Accessories.html">Accessories</a>
-  <a href="html/about.html">About</a>
-  <a href="php/support.php">Support</a>
-  <a href="php/Contact.php">Contact</a>
-  <a href="php/login.php">Sign In</a>
+  <a href="../index.html">Home</a>
+  <a href="../html/products.html">Guitars</a>
+  <a href="../html/Accessories.html">Accessories</a>
+  <a href="../html/about.html">About</a>
+  <a href="../php/support.php">Support</a>
+  <a href="../php/Contact.php">Contact</a>
+  <a href="../php/login.php">Sign In</a>
+  <a href="../html/cart.html" class="oc-cart">
   <a href="html/cart.html" class="oc-cart">
-    <img src="images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
+    <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
 </div>

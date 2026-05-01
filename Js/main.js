@@ -608,7 +608,7 @@ window.animateCarouselSlide = function(direction) {
 
 document.addEventListener('DOMContentLoaded', function() {
   const hasSeenModal = sessionStorage.getItem('schecterModalSeen');
-  if (!hasSeenModal && document.getElementById('promoModal')) { // ← add this check
+  if (!hasSeenModal && document.getElementById('promoModal')) {
     setTimeout(openModal, 1000);
     sessionStorage.setItem('schecterModalSeen', 'true');
   }

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+    <title>Schecter Guitars</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="../images/icon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="myOffcanvasNav" class="oc-sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  
+  <div class="oc-logo" style="padding:0 25px 20px;border-bottom:1px solid #333;margin-bottom:15px;">
+    <img src="../images/logo.png" alt="Schecter Guitars" style="height:40px;width:auto;">
+  </div>
+  
+  <a href="../index.html">Home</a>
+  <a href="../html/products.html">Guitars</a>
+  <a href="../html/Accessories.html">Accessories</a>
+  <a href="../html/about.html">About</a>
+  <a href="../php/support.php">Support</a>
+  <a href="../php/Contact.php">Contact</a>
+  <a href="../php/login.php">Sign In</a>
+  <a href="../html/cart.html" class="oc-cart">
+    <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
+    Cart <span class="cart-count">0</span>
+  </a>
+</div>
+
+  <header>
+        <div class="logo">
+      <img src="../images/logo.png" alt="Schecter Guitars">
+    </div>
+    <span style="font-size:30px;cursor:pointer;color:#fff;margin-right:15px;" onclick="openNav()">&#9776;</span>
+  </header>
+
+    <section class="product-details">
+        <div class="image-gallery">
+        <input type="radio" id="img17" name="gallery" checked>
+        <input type="radio" id="img18" name="gallery">
+        <input type="radio" id="img19" name="gallery">
+        <input type="radio" id="img20" name="gallery">
+
+        <div class="main-image">
+            <img src="../images/Synyster-fr.avif" alt="Synyster standard">
+        </div>
+        <div class="thumbnails">
+            <label for="img17">
+                <img src="../images/synyster-fr.avif" alt="Synyster">
+            </label>
+            <label for="img18">
+                <img src="../images/synyster-fr2.avif" alt="Synyster Front View">
+            </label>
+            <label for="img19">
+                <img src="../images/synyster-fr3.avif" alt="Synyster Side View">
+            </label>
+            <label for="img20">
+                <img src="../images/synyster-fr4.avif" alt="Synyster Back View">
+            </label>
+        </div>
+    </div>
+        <div class="details">
+            <h1 class="itemName" class="itemName">Synyster Gates FR QM USA Signature</h1>
+            <h4>Trans Clear Black Burst with Pinstripes</h4>
+            <p>The high-performance Synyster Gates FR QM USA Signature guitar delivers power and precision.</p>
+            <p class="price">$<span class="itemPrice">5,249</span>.00</p>
+            <h3>Specifications:</h3>
+            <ul>
+                <li>Mahogany body with Satin Black finish</li>
+                <li>Seymour Duncan Synyster Gates Invader pickups</li>
+                <li>Floyd Rose 1500 bridge</li>
+                <li>Ebony fingerboard with "SYN" inlays</li>
+                <li>24 Extra Jumbo Frets</li>
+            </ul>
+            <section class="gates">
+    <img src="../images/gates.avif" alt="Synyster Gates Signature">
+</section>
+    <div class="price">$5,249.00</div>
+
+<button class="add-to-cart btn" 
+    data-id="synyster-fr" 
+    data-product-id="6"
+    data-name="Synyster Gates FR QM USA Signature" 
+    data-price="5249.00" 
+    data-image="../images/synyster-fr.avif">
+    Add to Cart
+</button>
+        </div>
+    </section>
+    <section class="reviews">
+    <h2>Customer Reviews</h2>
+
+    <div class="review">
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
+        <p><strong>John D.</strong> - "Amazing tone and quality! The best acoustic I’ve ever owned."</p>
+    </div>
+    
+    <div class="review">
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
+        <p><strong>Lisa M.</strong> - "Great sound, and the Fishman preamp makes it even better!"</p>
+    </div>
+
+    <div class="review">
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★☆</p>
+        <p><strong>Alex R.</strong> - "Beautiful finish and comfortable to play."</p>
+    </div>
+</section>
+    <footer>
+        <p>&copy; 2026 Schecter Guitars. All rights reserved.</p>
+        <div class="social-media-icons">
+        <a href="https://www.facebook.com/SchecterGuitarResearch" target="_blank" aria-label="Facebook">
+            <img src="../images/fb.gif" alt="Facebook">
+        </a>
+        <a href="https://twitter.com/SchecterGuitars" target="_blank" aria-label="Twitter">
+            <img src="../images/twitter.png" alt="Twitter">
+        </a>
+        <a href="https://www.instagram.com/schecterguitarsofficial/" target="_blank" aria-label="Instagram">
+            <img src="../images/instagram.png" alt="Instagram">
+        </a>
+        <a href="https://www.youtube.com/user/SchecterGuitars" target="_blank" aria-label="YouTube">
+            <img src="../images/youtube.png" alt="YouTube">
+        </a>
+    </div>
+    </footer>
+<script src="../js/main.js"></script>
+</body>
+</html>

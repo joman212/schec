@@ -4,7 +4,6 @@ session_start();
 $conn = mysqli_connect("localhost", "root", "", "schecter_db");
 if (!$conn) { die("DB connection failed"); }
 
-// ── Handle all POST actions ───────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
 
@@ -18,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $product_id = (int)($data['product_id'] ?? 0);
     $user_id    = (int)$_SESSION['user_id'];
 
-    // Fetch cart items for JS rendering
     if ($action === 'fetch') {
         $result = mysqli_query($conn,
             "SELECT c.quantity, p.id, p.name, p.price, p.image
@@ -34,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Update quantity
     if ($action === 'update' && $product_id > 0) {
         $quantity = (int)($data['quantity'] ?? 1);
         $stmt = $conn->prepare("UPDATE cart SET quantity = ? WHERE user_id = ? AND product_id = ?");
@@ -44,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Remove item
     if ($action === 'remove' && $product_id > 0) {
         $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ? AND product_id = ?");
         $stmt->bind_param('ii', $user_id, $product_id);
@@ -56,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode(['success' => false, 'message' => 'Unknown action']);
     exit;
 }
-// ─────────────────────────────────────────────────────────────────────────────
 
 $logged_in = isset($_SESSION['user_id']);
 ?>
@@ -73,18 +68,17 @@ $logged_in = isset($_SESSION['user_id']);
 <body>
 
   <div class="oc-logo" style="padding:0 25px 20px;border-bottom:1px solid #333;margin-bottom:15px;">
-    <img src="../images/logo.png" alt="Schecter Guitars" style="height:40px;width:auto;">
-  </div>
+
   
-  <a href="index.html">Home</a>
-  <a href="html/products.html">Guitars</a>
-  <a href="html/Accessories.html">Accessories</a>
-  <a href="html/about.html">About</a>
-  <a href="php/support.php">Support</a>
-  <a href="php/Contact.php">Contact</a>
-  <a href="php/login.php">Sign In</a>
-  <a href="html/cart.html" class="oc-cart">
-    <img src="images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
+  <a href="../index.html">Home</a>
+  <a href="../html/products.html">Guitars</a>
+  <a href="../html/Accessories.html">Accessories</a>
+  <a href="../html/about.html">About</a>
+  <a href="../php/support.php">Support</a>
+  <a href="../php/Contact.php">Contact</a>
+  <a href="../php/login.php">Sign In</a>
+  <a href="../html/cart.html" class="oc-cart">
+    <img src="../images/cart.png" alt="Cart" style="width:20px;vertical-align:middle;margin-right:8px;">
     Cart <span class="cart-count">0</span>
   </a>
 </div>
@@ -217,7 +211,6 @@ $logged_in = isset($_SESSION['user_id']);
         });
     }
 
-    // ── Init ──────────────────────────────────────────────────────────────────
     if (!loggedIn) {
         container.innerHTML = '<p style="color:#E5E5E5;text-align:center;padding:3rem">Please <a href="../php/login.php" style="color:#E76E24">sign in</a> to view your cart.</p>';
         summary.style.display = 'none';

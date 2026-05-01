@@ -49,19 +49,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn->close();
     exit;
 }
-?>
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+content="width=device-width, initial-scale=1.0">
     <title>Schecter Guitars</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="icon" href="../images/icon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
 <div id="myOffcanvasNav" class="oc-sidebar">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
   
@@ -82,84 +81,100 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </a>
 </div>
 
-<header>
-    <div class="logo">
-        <img src="../images/logo.png" alt="Schecter Guitars">
+  <header>
+        <div class="logo">
+      <img src="../images/logo.png" alt="Schecter Guitars">
     </div>
     <span style="font-size:30px;cursor:pointer;color:#fff;margin-right:15px;" onclick="openNav()">&#9776;</span>
-</header>
+  </header>
 
-<section class="product-details">
-    <div class="image-gallery">
-        <input type="radio" id="img21" name="gallery" checked>
-        <input type="radio" id="img22" name="gallery">
-        <input type="radio" id="img23" name="gallery">
-        <input type="radio" id="img24" name="gallery">
+    <section class="product-details">
+        <div class="image-gallery">
+        <input type="radio" id="img5" name="gallery" checked>
+        <input type="radio" id="img6" name="gallery">
+        <input type="radio" id="img7" name="gallery">
+        <input type="radio" id="img8" name="gallery">
 
         <div class="main-image">
-            <img src="../images/Synyster-standard.avif" alt="Synyster Standard">
+            <img src="../images/Synyster-custom.avif" alt="Synyster standard">
         </div>
         <div class="thumbnails">
-            <label for="img21"><img src="../images/synyster-standard.avif"  alt="Synyster"></label>
-            <label for="img22"><img src="../images/synyster-standard2.avif" alt="Front View"></label>
-            <label for="img23"><img src="../images/synyster-standard3.avif" alt="Side View"></label>
-            <label for="img24"><img src="../images/synyster-standard4.avif" alt="Back View"></label>
+            <label for="img5">
+                <img src="../images/synyster-custom.avif" alt="Synyster">
+            </label>
+            <label for="img6">
+                <img src="../images/synyster-custom2.avif" alt="Synyster Front View">
+            </label>
+            <label for="img7">
+                <img src="../images/synyster-custom3.avif" alt="Synyster Side View">
+            </label>
+            <label for="img8">
+                <img src="../images/synyster-custom4.avif" alt="Synyster Back View">
+            </label>
         </div>
     </div>
-
-    <div class="details">
-        <h1 class="itemName">Synyster Gates Standard</h1>
-        <h4>Gloss Black with Silver Pinstripes</h4>
-        <p>A high-performance guitar designed for rock and metal players.</p>
-        <p class="price">$<span class="itemPrice">949</span>.00</p>
-        <h3>Specifications:</h3>
-        <ul>
-            <li>Mahogany body with Gloss Black finish</li>
-            <li>Duncan Designed HB-108 Detonator pickups</li>
-            <li>Floyd Rose Special bridge</li>
-            <li>Rosewood fingerboard with pearloid inlays</li>
-            <li>24 Extra Jumbo Frets</li>
-        </ul>
-        <section class="gates">
-            <img src="../images/gates.avif" alt="Synyster Gates Signature">
-        </section>
-
-        <button class="add-to-cart btn"
-                data-id="Synyster-standard" 
-                data-product-id="2"
-                data-name="Synyster Standard"
-                data-price="949.00"
-                data-image="../images/Synyster-standard.avif">
-            Add to Cart
-        </button>
-    </div>
+        <div class="details">
+            <h1 class="itemName" class="itemName">Synyster Custom</h1>
+            <h4>Gloss Black with Silver Pinstripes</h4>
+            <p>The Synyster Custom guitar offers a bold, aggressive sound.</p>
+            <p class="price">$<span class="itemPrice">1,399</span>.00</p>
+            <h3>Specifications:</h3>
+            <ul>
+                <li>Mahogany body with Gloss Black finish</li>
+                <li>Seymour Duncan Invader pickups</li>
+                <li>Floyd Rose 1500 bridge</li>
+                <li>Ebony fingerboard with "SYN" inlays</li>
+            </ul>
+            <section class="gates">
+    <img src="../images/gates.avif" alt="Synyster Gates Signature">
 </section>
+        <div class="price">$1,399.00</div>
 
+            <button class="add-to-cart btn" 
+    data-id="synyster-custom" 
+    data-name="Synyster Custom" 
+    data-product-id="3"
+    data-price="1399.00" 
+    data-image="../images/synyster-custom.avif">
+    Add to Cart
+</button>
+        </div>
+    </section>
 <section class="reviews">
     <h2>Customer Reviews</h2>
+
     <div class="review">
-        <p style="color:#D4AF37;margin-bottom:5px;">★★★★★</p>
-        <p><strong>John D.</strong> - "Amazing tone and quality! The best acoustic I've ever owned."</p>
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
+        <p><strong>John D.</strong> - "Amazing tone and quality! The best acoustic I’ve ever owned."</p>
     </div>
+    
     <div class="review">
-        <p style="color:#D4AF37;margin-bottom:5px;">★★★★★</p>
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★★</p>
         <p><strong>Lisa M.</strong> - "Great sound, and the Fishman preamp makes it even better!"</p>
     </div>
+
     <div class="review">
-        <p style="color:#D4AF37;margin-bottom:5px;">★★★★☆</p>
+        <p style="color: #D4AF37; margin-bottom: 5px;">★★★★☆</p>
         <p><strong>Alex R.</strong> - "Beautiful finish and comfortable to play."</p>
     </div>
 </section>
-
-<footer>
-    <p>&copy; 2026 Schecter Guitars. All rights reserved.</p>
-    <div class="social-media-icons">
-        <a href="https://www.facebook.com/SchecterGuitarResearch" target="_blank"><img src="../images/fb.gif" alt="Facebook"></a>
-        <a href="https://twitter.com/SchecterGuitars"              target="_blank"><img src="../images/twitter.png" alt="Twitter"></a>
-        <a href="https://www.instagram.com/schecterguitarsofficial/" target="_blank"><img src="../images/instagram.png" alt="Instagram"></a>
-        <a href="https://www.youtube.com/user/SchecterGuitars"      target="_blank"><img src="../images/youtube.png" alt="YouTube"></a>
+    <footer>
+        <p>&copy; 2026 Schecter Guitars. All rights reserved.</p>
+        <div class="social-media-icons">
+        <a href="https://www.facebook.com/SchecterGuitarResearch" target="_blank" aria-label="Facebook">
+            <img src="../images/fb.gif" alt="Facebook">
+        </a>
+        <a href="https://twitter.com/SchecterGuitars" target="_blank" aria-label="Twitter">
+            <img src="../images/twitter.png" alt="Twitter">
+        </a>
+        <a href="https://www.instagram.com/schecterguitarsofficial/" target="_blank" aria-label="Instagram">
+            <img src="../images/instagram.png" alt="Instagram">
+        </a>
+        <a href="https://www.youtube.com/user/SchecterGuitars" target="_blank" aria-label="YouTube">
+            <img src="../images/youtube.png" alt="YouTube">
+        </a>
     </div>
-</footer>
+    </footer>
 <script src="../js/main.js"></script>
 
 </body>
