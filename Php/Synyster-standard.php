@@ -1,15 +1,17 @@
 <?php
 session_start();
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
+    $data = json_decode(file_get_contents('php://input'), true);
 
-    if (!isset($_SESSION['user_id'])) {
+    // Bridge localStorage auth with PHP: use session if set, otherwise fallback to POSTed user_id
+    $user_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : (int)($data['user_id'] ?? 0);
+
+    if ($user_id <= 0) {
         echo json_encode(['success' => false, 'message' => 'not_logged_in']);
         exit;
     }
 
-    $data       = json_decode(file_get_contents('php://input'), true);
     $product_id = isset($data['product_id']) ? (int)$data['product_id'] : 0;
     $quantity   = isset($data['quantity'])   ? (int)$data['quantity']   : 1;
 
@@ -24,8 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $user_id = (int)$_SESSION['user_id'];
-
+    // Insert or update quantity if product already in cart
     $stmt = $conn->prepare(
         "INSERT INTO cart (user_id, product_id, quantity)
          VALUES (?, ?, ?)
@@ -34,17 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param('iii', $user_id, $product_id, $quantity);
 
     if ($stmt->execute()) {
-        $count_stmt = $conn->prepare(
-            "SELECT SUM(quantity) AS total FROM cart WHERE user_id = ?"
-        );
+        $count_stmt = $conn->prepare("SELECT SUM(quantity) AS total FROM cart WHERE user_id = ?");
         $count_stmt->bind_param('i', $user_id);
         $count_stmt->execute();
-        $total = (int)($count_stmt->get_result()->fetch_assoc()['total'] ?? 0);
+        $result = $count_stmt->get_result();
+        $total = (int)($result->fetch_assoc()['total'] ?? 0);
         echo json_encode(['success' => true, 'cart_count' => $total]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Insert failed']);
     }
-
     $stmt->close();
     $conn->close();
     exit;

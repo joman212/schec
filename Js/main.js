@@ -57,8 +57,8 @@
     
     document.querySelectorAll('#myOffcanvasNav a').forEach(function(link) {
       var href = link.getAttribute('href') || '';
-      var isLogin = href.indexOf('login.php') !== -1 || href.indexOf('login.html') !== -1;
-      var isSignup = href.indexOf('signup.php') !== -1 || href.indexOf('signup.html') !== -1;
+      var isLogin = href.indexOf('login.php') !== -1 || href.indexOf('login.php') !== -1;
+      var isSignup = href.indexOf('signup.php') !== -1 || href.indexOf('signup.php') !== -1;
       
       if (isLogin || isSignup) {
         if (user) {
@@ -67,8 +67,8 @@
         } else {
           link.textContent = isSignup ? 'Sign Up' : 'Sign In';
           link.href = isSignup 
-            ? (window.location.pathname.includes('html/') ? 'signup.html' : 'html/signup.html')
-            : (window.location.pathname.includes('html/') ? 'login.html' : 'html/login.html');
+            ? (window.location.pathname.includes('php/') ? 'signup.php' : 'php/signup.php')
+            : (window.location.pathname.includes('php/') ? 'login.php' : 'php/login.php');
         }
         link.onclick = function(e) {
           if (link.href === window.location.href) {
@@ -86,7 +86,7 @@
         authLink.href = 'html/account.html';
       } else {
         authLink.textContent = 'Sign In';
-        authLink.href = 'html/login.html';
+        authLink.href = 'php/login.php';
       }
     }
     
@@ -532,7 +532,7 @@ function initAccountPage() {
   const user = window.getCurrentUser();
   
   if (!user) {
-    window.location.href = 'login.html';
+    window.location.href = 'login.php';
     return;
   }
   
