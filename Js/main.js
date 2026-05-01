@@ -4,6 +4,7 @@
   if (window._schecterInitialized) return;
   window._schecterInitialized = true;
 
+  // ===== UTILITY FUNCTIONS =====
   function formatPrice(price) {
     return parseFloat(price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
@@ -29,6 +30,7 @@
     setTimeout(() => { element.style.display = 'none'; }, 5000);
   }
 
+  // ===== AUTH FUNCTIONS =====
   window.isLoggedIn = function() {
     return !!(localStorage.getItem('schecterCurrentUser') || 
               sessionStorage.getItem('schecterCurrentUser'));
@@ -43,22 +45,44 @@
   window.logout = function() {
     localStorage.removeItem('schecterCurrentUser');
     sessionStorage.removeItem('schecterCurrentUser');
-    
     if (typeof window.updateAuthNav === 'function') window.updateAuthNav();
+    if (typeof window.updateDynamicHeader === 'function') window.updateDynamicHeader();
     if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
-    
     if (window.location.href.includes('account.html')) {
       window.location.href = 'index.html';
     }
   };
 
+  // ===== DYNAMIC HEADER AUTH TOGGLE (Pure JS) =====
+  window.updateDynamicHeader = function() {
+    const isLoggedIn = window.isLoggedIn();
+    const authLinks = document.querySelectorAll('header a[href*="login"], header a[href*="signup"], #authLink, .header-auth-link');
+    
+    authLinks.forEach(link => {
+      const href = link.getAttribute('href') || '';
+      if (href.includes('login.php') || href.includes('signup.php') || link.id === 'authLink' || link.classList.contains('header-auth-link')) {
+        if (isLoggedIn) {
+          link.textContent = 'My Account';
+          // Resolve path dynamically
+          const basePath = window.location.pathname.includes('/html/') || window.location.pathname.includes('/php/') ? '../html/' : 'html/';
+          link.href = basePath + 'account.html';
+        } else {
+          link.textContent = 'Sign In';
+          const basePath = window.location.pathname.includes('/html/') || window.location.pathname.includes('/php/') ? '../php/' : 'php/';
+          link.href = basePath + 'login.php';
+        }
+      }
+    });
+  };
+
+  // ===== NAVIGATION UPDATE =====
   window.updateAuthNav = function() {
     const user = window.getCurrentUser();
     
     document.querySelectorAll('#myOffcanvasNav a').forEach(function(link) {
       var href = link.getAttribute('href') || '';
-      var isLogin = href.indexOf('login.php') !== -1 || href.indexOf('login.php') !== -1;
-      var isSignup = href.indexOf('signup.php') !== -1 || href.indexOf('signup.php') !== -1;
+      var isLogin = href.indexOf('login.php') !== -1;
+      var isSignup = href.indexOf('signup.php') !== -1;
       
       if (isLogin || isSignup) {
         if (user) {
@@ -83,10 +107,10 @@
     if (authLink) {
       if (user) {
         authLink.textContent = 'My Account';
-        authLink.href = 'html/account.html';
+        authLink.href = window.location.pathname.includes('php/') ? '../html/account.html' : 'html/account.html';
       } else {
         authLink.textContent = 'Sign In';
-        authLink.href = 'php/login.php';
+        authLink.href = window.location.pathname.includes('html/') ? '../php/login.php' : 'php/login.php';
       }
     }
     
@@ -100,6 +124,7 @@
     });
   };
 
+  // ===== CART BADGE =====
   window.updateCartBadge = function() {
     const cart = getCart();
     const total = cart.reduce((sum, item) => sum + (parseInt(item.quantity) || 1), 0);
@@ -108,13 +133,14 @@
     });
   };
 
+  // ===== LOCAL CART OPERATIONS =====
   window.addToCart = function(id, name, price, image, quantity = 1) {
     if (!id || !name) return false;
     const numericPrice = parseFloat(price);
     if (isNaN(numericPrice)) return false;
     
     let cart = getCart();
-    const idx = cart.findIndex(item => item.id === id);
+    const idx = cart.findIndex(item => String(item.id) === String(id));
     
     if (idx > -1) {
       cart[idx].quantity = (parseInt(cart[idx].quantity) || 1) + quantity;
@@ -152,6 +178,7 @@
     window.updateCartBadge();
   };
 
+  // ===== RENDER CART DISPLAY (LocalStorage fallback) =====
   window.renderCartDisplay = function() {
     const container = document.getElementById('cartContainer');
     const summary = document.getElementById('cartSummary');
@@ -205,6 +232,7 @@
     window.updateCartBadge();
   };
 
+  // ===== UI INITIALIZATION =====
   function initImageGallery() {
     document.querySelectorAll('.image-gallery').forEach(gallery => {
       const mainImg = gallery.querySelector('.main-image img');
@@ -252,6 +280,7 @@
     });
     
     window.updateAuthNav();
+    window.updateDynamicHeader();
   }
 
   function init() {
@@ -272,6 +301,7 @@
     if (document.getElementById('cartContainer')) window.renderCartDisplay(); 
   };
 
+  // ===== LOGIN FORM (LocalStorage auth) =====
   (function() {
     const form = document.getElementById('loginForm');
     const msg = document.getElementById('loginMessage');
@@ -307,6 +337,7 @@
         showMessage(msg, 'Login successful! Redirecting...', 'success');
         setTimeout(() => { 
           if (typeof window.updateAuthNav === 'function') window.updateAuthNav();
+          if (typeof window.updateDynamicHeader === 'function') window.updateDynamicHeader();
           if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
           window.location.href = 'index.html'; 
         }, 1000);
@@ -314,151 +345,153 @@
         showMessage(msg, 'Invalid email or password', 'error');
       }
     });
-
-
-
-(function initProductCart() {
-  const addToCartBtns = document.querySelectorAll('.add-to-cart');
-  if (!addToCartBtns.length) return;
-
-  function updateBadge(n) {
-    document.querySelectorAll('.cart-count, #cart-count, [data-cart-badge]').forEach(function(el) {
-      el.textContent = n;
-    });
-  }
-
-  function getLocalCart() {
-    try {
-      return JSON.parse(localStorage.getItem('schecter_cart') || '[]');
-    } catch (e) {
-      return [];
-    }
-  }
-
-  function saveLocalCart(cart) {
-    localStorage.setItem('schecter_cart', JSON.stringify(cart));
-  }
-
-  function localAdd(btn) {
-    var cart = getLocalCart();
-    var pid = btn.dataset.productId || btn.dataset.id;
-    var name = btn.dataset.name;
-    var price = parseFloat(btn.dataset.price) || 0;
-    var image = btn.dataset.image || '';
-    
-    var found = cart.find(function(i) { return String(i.product_id) === String(pid) || String(i.id) === String(pid); });
-    
-    if (found) {
-      found.quantity = (found.quantity || 1) + 1;
-    } else {
-      cart.push({ 
-        product_id: pid, 
-        id: pid, 
-        name: name, 
-        price: price, 
-        image: image, 
-        quantity: 1 
-      });
-    }
-    
-    saveLocalCart(cart);
-    
-    var total = cart.reduce(function(s, i) { return s + (i.quantity || 1); }, 0);
-    updateBadge(total);
-    
-    var originalText = btn.textContent;
-    btn.textContent = '✓ Added!';
-    btn.disabled = true;
-    setTimeout(function() { 
-      btn.textContent = originalText; 
-      btn.disabled = false; 
-    }, 1500);
-    
-    return true;
-  }
-
-  addToCartBtns.forEach(function(btn) {
-    if (btn._productCartAttached) return;
-    btn._productCartAttached = true;
-    
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      
-      var productId = parseInt(btn.dataset.productId) || parseInt(btn.dataset.id);
-      if (!productId) {
-        localAdd(btn);
-        return;
-      }
-      
-      btn.classList.add('loading');
-      btn.disabled = true;
-      
-      fetch(window.location.href, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_id: productId,
-          quantity: 1
-        })
-      })
-      .then(function(response) {
-        if (!response.ok) throw new Error('Network error');
-        return response.json();
-      })
-      .then(function(data) {
-        if (data && data.success) {
-          if (data.cart_count !== undefined) {
-            updateBadge(data.cart_count);
-          }
-          var cart = getLocalCart();
-          var existing = cart.find(function(i) { return String(i.product_id) === String(productId) || String(i.id) === String(productId); });
-          if (existing) {
-            existing.quantity = (existing.quantity || 1) + 1;
-          } else {
-            cart.push({
-              product_id: productId,
-              id: productId,
-              name: btn.dataset.name,
-              price: parseFloat(btn.dataset.price) || 0,
-              image: btn.dataset.image || '',
-              quantity: 1
-            });
-          }
-          saveLocalCart(cart);
-          
-          var originalText = btn.textContent;
-          btn.textContent = '✓ Added!';
-          setTimeout(function() { 
-            btn.textContent = originalText; 
-            btn.disabled = false; 
-            btn.classList.remove('loading');
-          }, 1500);
-          
-        } else if (data && data.message === 'not_logged_in') {
-          localAdd(btn);
-          btn.classList.remove('loading');
-        } else {
-          localAdd(btn);
-          btn.classList.remove('loading');
-        }
-      })
-      .catch(function(err) {
-        console.log('PHP cart fallback:', err);
-        localAdd(btn);
-        btn.classList.remove('loading');
-      });
-    });
-  });
-  
-  var localCart = getLocalCart();
-  var localTotal = localCart.reduce(function(s, i) { return s + (i.quantity || 1); }, 0);
-  if (localTotal > 0) {
-    updateBadge(localTotal);
-  }
-  
-})();
   })();
 
+  // ===== ADD TO CART WITH PHP DB INTEGRATION =====
+  (function initProductCart() {
+    const addToCartBtns = document.querySelectorAll('.add-to-cart');
+    if (!addToCartBtns.length) return;
+
+    function updateBadge(n) {
+      document.querySelectorAll('.cart-count, #cart-count, [data-cart-badge]').forEach(function(el) {
+        el.textContent = n;
+      });
+    }
+
+    function getLocalCart() {
+      try {
+        return JSON.parse(localStorage.getItem('userCart') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveLocalCart(cart) {
+      localStorage.setItem('userCart', JSON.stringify(cart));
+    }
+
+    function localAdd(btn) {
+      var cart = getLocalCart();
+      var pid = btn.dataset.productId || btn.dataset.id;
+      var name = btn.dataset.name;
+      var price = parseFloat(btn.dataset.price) || 0;
+      var image = btn.dataset.image || '';
+      
+      var found = cart.find(function(i) { return String(i.id) === String(pid); });
+      
+      if (found) {
+        found.quantity = (found.quantity || 1) + 1;
+      } else {
+        cart.push({ 
+          id: String(pid), 
+          name: name, 
+          price: price, 
+          image: image, 
+          quantity: 1 
+        });
+      }
+      
+      saveLocalCart(cart);
+      var total = cart.reduce(function(s, i) { return s + (i.quantity || 1); }, 0);
+      updateBadge(total);
+      
+      var originalText = btn.textContent;
+      btn.textContent = '✓ Added!';
+      btn.disabled = true;
+      setTimeout(function() { 
+        btn.textContent = originalText; 
+        btn.disabled = false; 
+      }, 1500);
+      
+      return true;
+    }
+
+    addToCartBtns.forEach(function(btn) {
+      if (btn._productCartAttached) return;
+      btn._productCartAttached = true;
+      
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        var productId = parseInt(btn.dataset.productId) || parseInt(btn.dataset.id);
+        if (!productId) {
+          localAdd(btn);
+          return;
+        }
+        
+        btn.classList.add('loading');
+        btn.disabled = true;
+        
+        // POST to current page (Synyster-standard.php handles it)
+        // credentials: 'include' sends PHP session cookies automatically
+        fetch(window.location.href, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            product_id: productId,
+            quantity: 1
+          })
+        })
+        .then(function(response) {
+          if (!response.ok) throw new Error('Network error');
+          return response.json();
+        })
+        .then(function(data) {
+          if (data && data.success) {
+            if (data.cart_count !== undefined) {
+              updateBadge(data.cart_count);
+            }
+            // Sync with localStorage for consistency
+            var cart = getLocalCart();
+            var existing = cart.find(function(i) { return String(i.id) === String(productId); });
+            if (existing) {
+              existing.quantity = (existing.quantity || 1) + 1;
+            } else {
+              cart.push({
+                id: String(productId),
+                name: btn.dataset.name,
+                price: parseFloat(btn.dataset.price) || 0,
+                image: btn.dataset.image || '',
+                quantity: 1
+              });
+            }
+            saveLocalCart(cart);
+            
+            var originalText = btn.textContent;
+            btn.textContent = '✓ Added!';
+            setTimeout(function() { 
+              btn.textContent = originalText; 
+              btn.disabled = false; 
+              btn.classList.remove('loading');
+            }, 1500);
+            
+          } else if (data && data.message === 'not_logged_in') {
+            // Fallback to localStorage if not logged in
+            localAdd(btn);
+            btn.classList.remove('loading');
+          } else {
+            localAdd(btn);
+            btn.classList.remove('loading');
+          }
+        })
+        .catch(function(err) {
+          console.log('PHP cart fallback:', err);
+          localAdd(btn);
+          btn.classList.remove('loading');
+        });
+      });
+    });
+    
+    // Initialize badge from localStorage
+    var localCart = getLocalCart();
+    var localTotal = localCart.reduce(function(s, i) { return s + (i.quantity || 1); }, 0);
+    if (localTotal > 0) {
+      updateBadge(localTotal);
+    }
+  })();
+
+  // ===== SIGNUP FORM =====
   (function() {
     const form = document.getElementById('signupForm');
     const msg = document.getElementById('signupMessage');
@@ -519,6 +552,7 @@
       showMessage(msg, 'Account created! Redirecting...', 'success');
       setTimeout(() => { 
         if (typeof window.updateAuthNav === 'function') window.updateAuthNav();
+        if (typeof window.updateDynamicHeader === 'function') window.updateDynamicHeader();
         window.location.href = 'index.html'; 
       }, 1000);
     });
@@ -526,13 +560,14 @@
 
 })();
 
+// ===== ACCOUNT PAGE =====
 function initAccountPage() {
   if (!window.location.href.includes('account.html')) return;
   
   const user = window.getCurrentUser();
   
   if (!user) {
-    window.location.href = 'login.php';
+    window.location.href = window.location.pathname.includes('php/') ? '../php/login.php' : 'php/login.php';
     return;
   }
   
@@ -617,9 +652,12 @@ function initAccountPage() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Run dynamic header on every page load
+  if (typeof window.updateDynamicHeader === 'function') window.updateDynamicHeader();
   initAccountPage();
 });
 
+// ===== NAVIGATION & UI =====
 function openNav() {
   document.getElementById("myOffcanvasNav").style.width = "220px";
 }
@@ -660,6 +698,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+// ===== CAROUSEL =====
 let slideIndex = 0;
 
 function showSlide(index) {
@@ -715,6 +754,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+// ===== SCROLL ANIMATIONS =====
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -726,6 +766,7 @@ const observer = new IntersectionObserver((entries) => {
 document.querySelectorAll('.featured, .reviews, .bio, .featured-videos')
   .forEach(el => observer.observe(el));
 
+// ===== CAROUSEL ANIMATION =====
 window.animateCarouselSlide = function(direction) {
   const slides = document.querySelectorAll('.carousel-slide');
   const activeSlide = document.querySelector('.carousel-slide.active');
