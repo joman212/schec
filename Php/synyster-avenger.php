@@ -1,3 +1,56 @@
+<?php
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json');
+
+    if (!isset($_SESSION['user_id'])) {
+        echo json_encode(['success' => false, 'message' => 'not_logged_in']);
+        exit;
+    }
+
+    $data       = json_decode(file_get_contents('php://input'), true);
+    $product_id = isset($data['product_id']) ? (int)$data['product_id'] : 0;
+    $quantity   = isset($data['quantity'])   ? (int)$data['quantity']   : 1;
+
+    if ($product_id <= 0) {
+        echo json_encode(['success' => false, 'message' => 'Invalid product']);
+        exit;
+    }
+
+    $conn = new mysqli('localhost', 'root', '', 'schecter_db');
+    if ($conn->connect_error) {
+        echo json_encode(['success' => false, 'message' => 'DB error']);
+        exit;
+    }
+
+    $user_id = (int)$_SESSION['user_id'];
+
+    $stmt = $conn->prepare(
+        "INSERT INTO cart (user_id, product_id, quantity)
+         VALUES (?, ?, ?)
+         ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)"
+    );
+    $stmt->bind_param('iii', $user_id, $product_id, $quantity);
+
+    if ($stmt->execute()) {
+        $count_stmt = $conn->prepare(
+            "SELECT SUM(quantity) AS total FROM cart WHERE user_id = ?"
+        );
+        $count_stmt->bind_param('i', $user_id);
+        $count_stmt->execute();
+        $total = (int)($count_stmt->get_result()->fetch_assoc()['total'] ?? 0);
+        echo json_encode(['success' => true, 'cart_count' => $total]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Insert failed']);
+    }
+
+    $stmt->close();
+    $conn->close();
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

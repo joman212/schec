@@ -161,68 +161,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </footer>
 <script src="../js/main.js"></script>
-<script>
-(function () {
-    function updateBadge(n) {
-        document.querySelectorAll('.cart-count').forEach(function (el) {
-            el.textContent = n;
-        });
-    }
-
-    function localAdd(btn) {
-        var cart  = JSON.parse(localStorage.getItem('schecter_cart') || '[]');
-        var pid   = btn.dataset.productId;
-        var found = cart.find(function (i) { return i.product_id === pid; });
-        if (found) {
-            found.quantity += 1;
-        } else {
-            cart.push({ product_id: pid, name: btn.dataset.name,
-                        price: parseFloat(btn.dataset.price),
-                        image: btn.dataset.image, quantity: 1 });
-        }
-        localStorage.setItem('schecter_cart', JSON.stringify(cart));
-        updateBadge(cart.reduce(function (s, i) { return s + i.quantity; }, 0));
-        btn.textContent = 'Added!';
-        setTimeout(function () { btn.textContent = 'Add to Cart'; }, 1500);
-    }
-
-    document.querySelectorAll('.add-to-cart').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            btn.classList.add('loading');
-
-            fetch(window.location.href, {
-                method : 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body   : JSON.stringify({
-                    product_id: parseInt(btn.dataset.productId),
-                    quantity  : 1
-                })
-            })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                if (data.success) {
-                    updateBadge(data.cart_count);
-                    btn.textContent = 'Added!';
-                    setTimeout(function () { btn.textContent = 'Add to Cart'; }, 1500);
-                } else if (data.message === 'not_logged_in') {
-                    localAdd(btn);
-                } else {
-                    btn.textContent = 'Error. Try again.';
-                    setTimeout(function () { btn.textContent = 'Add to Cart'; }, 1500);
-                }
-            })
-            .catch(function () { localAdd(btn); })
-            .finally(function () { btn.classList.remove('loading'); });
-        });
-    });
-
-    (function () {
-        var cart  = JSON.parse(localStorage.getItem('schecter_cart') || '[]');
-        var total = cart.reduce(function (s, i) { return s + i.quantity; }, 0);
-        if (total > 0) updateBadge(total);
-    })();
-})();
-</script>
 
 </body>
 </html>

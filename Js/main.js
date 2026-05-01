@@ -9,7 +9,11 @@
   }
   
   function getCart() {
-    return JSON.parse(localStorage.getItem('userCart')) || [];
+    try {
+      return JSON.parse(localStorage.getItem('userCart')) || [];
+    } catch (e) {
+      return [];
+    }
   }
   
   function saveCart(cart) {
@@ -40,15 +44,11 @@
     localStorage.removeItem('schecterCurrentUser');
     sessionStorage.removeItem('schecterCurrentUser');
     
-    if (typeof window.updateAuthNav === 'function') {
-      window.updateAuthNav();
-    }
-    if (typeof window.updateCartBadge === 'function') {
-      window.updateCartBadge();
-    }
+    if (typeof window.updateAuthNav === 'function') window.updateAuthNav();
+    if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
     
-    if (window.location.href.includes('html/account.html')) {
-      window.location.href = '../index.html';
+    if (window.location.href.includes('account.html')) {
+      window.location.href = 'index.html';
     }
   };
 
@@ -57,20 +57,25 @@
     
     document.querySelectorAll('#myOffcanvasNav a').forEach(function(link) {
       var href = link.getAttribute('href') || '';
-      if (href.indexOf('php/login.php') !== -1 || href.indexOf('php/signup.php') !== -1) {
+      var isLogin = href.indexOf('login.php') !== -1 || href.indexOf('login.html') !== -1;
+      var isSignup = href.indexOf('signup.php') !== -1 || href.indexOf('signup.html') !== -1;
+      
+      if (isLogin || isSignup) {
         if (user) {
           link.textContent = 'My Account';
-          link.href = 'html/account.html';
+          link.href = window.location.pathname.includes('html/') ? 'account.html' : 'html/account.html';
         } else {
-          if (href.indexOf('php/signup.php') !== -1) {
-            link.textContent = 'Sign Up';
-            link.href = 'php/signup.php';
-          } else {
-            link.textContent = 'Sign In';
-            link.href = 'php/login.php';
-          }
+          link.textContent = isSignup ? 'Sign Up' : 'Sign In';
+          link.href = isSignup 
+            ? (window.location.pathname.includes('html/') ? 'signup.html' : 'html/signup.html')
+            : (window.location.pathname.includes('html/') ? 'login.html' : 'html/login.html');
         }
-        link.onclick = null;
+        link.onclick = function(e) {
+          if (link.href === window.location.href) {
+            e.preventDefault();
+            if (typeof closeNav === 'function') closeNav();
+          }
+        };
       }
     });
     
@@ -79,11 +84,9 @@
       if (user) {
         authLink.textContent = 'My Account';
         authLink.href = 'html/account.html';
-        authLink.onclick = null;
       } else {
         authLink.textContent = 'Sign In';
-        authLink.href = 'php/login.php';
-        authLink.onclick = null;
+        authLink.href = 'html/login.html';
       }
     }
     
@@ -102,7 +105,6 @@
     const total = cart.reduce((sum, item) => sum + (parseInt(item.quantity) || 1), 0);
     document.querySelectorAll('.cart-count, #cart-count, [data-cart-badge]').forEach(badge => {
       badge.textContent = total;
-      badge.style.display = total > 0 ? 'inline-block' : 'none';
     });
   };
 
@@ -117,7 +119,13 @@
     if (idx > -1) {
       cart[idx].quantity = (parseInt(cart[idx].quantity) || 1) + quantity;
     } else {
-      cart.push({ id, name, price: numericPrice, image: image || '', quantity });
+      cart.push({ 
+        id: String(id), 
+        name: String(name), 
+        price: numericPrice, 
+        image: image || '', 
+        quantity: parseInt(quantity) || 1 
+      });
     }
     
     saveCart(cart);
@@ -127,9 +135,12 @@
 
   window.removeItem = function(index) {
     let cart = getCart();
-    cart.splice(index, 1);
-    saveCart(cart);
-    if (typeof window.renderCartDisplay === 'function') window.renderCartDisplay();
+    if (cart[index]) {
+      cart.splice(index, 1);
+      saveCart(cart);
+      if (typeof window.renderCartDisplay === 'function') window.renderCartDisplay();
+      window.updateCartBadge();
+    }
   };
   
   window.changeQuantity = function(index, delta) {
@@ -138,6 +149,7 @@
     cart[index].quantity = Math.max(1, (parseInt(cart[index].quantity) || 1) + delta);
     saveCart(cart);
     if (typeof window.renderCartDisplay === 'function') window.renderCartDisplay();
+    window.updateCartBadge();
   };
 
   window.renderCartDisplay = function() {
@@ -150,7 +162,7 @@
     const cart = getCart();
     
     if (cart.length === 0) {
-      container.innerHTML = '<div class="empty-cart"><p style="color:#E5E5E5">Your cart is empty.</p><p><a href="../html/products.html" style="color:#E76E24">Continue Shopping</a></p></div>';
+      container.innerHTML = '<div class="empty-cart"><p>Your cart is empty.</p><p><a href="products.html">Continue Shopping</a></p></div>';
       if (summary) summary.style.display = 'none';
       if (totalEl) totalEl.textContent = '0.00';
       window.updateCartBadge();
@@ -172,7 +184,7 @@
           '<h3><a href="' + item.id + '.html">' + item.name + '</a></h3>' +
           '<div class="cart-item-price">Price: $' + formatPrice(price) + '</div>' +
           '<div class="cart-item-quantity">Quantity: ' + qty + '</div>' +
-          '<div class="cart-item-price" style="margin-top:10px">Subtotal: $' + formatPrice(itemTotal) + '</div>' +
+          '<div class="cart-item-price">Subtotal: $' + formatPrice(itemTotal) + '</div>' +
           '<button class="remove-btn" data-index="' + index + '">Remove</button>' +
         '</div>' +
       '</div>';
@@ -180,6 +192,7 @@
     
     html += '</div>';
     container.innerHTML = html;
+    
     if (totalEl) totalEl.textContent = formatPrice(total);
     if (summary) summary.style.display = 'block';
     
@@ -280,7 +293,11 @@
       const user = users.find(u => u.email === email && u.password === password);
       
       if (user) {
-        const sessionData = { email: user.email, name: user.firstName + ' ' + user.lastName };
+        const sessionData = { 
+          email: user.email, 
+          name: (user.firstName || '') + ' ' + (user.lastName || ''),
+          id: user.id
+        };
         if (remember) {
           localStorage.setItem('schecterCurrentUser', JSON.stringify(sessionData));
         } else {
@@ -289,8 +306,10 @@
         
         showMessage(msg, 'Login successful! Redirecting...', 'success');
         setTimeout(() => { 
-          window.location.href = '../index.html'; 
-        }, 1500);
+          if (typeof window.updateAuthNav === 'function') window.updateAuthNav();
+          if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
+          window.location.href = 'index.html'; 
+        }, 1000);
       } else {
         showMessage(msg, 'Invalid email or password', 'error');
       }
@@ -350,14 +369,157 @@
       
       localStorage.setItem('schecterCurrentUser', JSON.stringify({
         email: newUser.email,
-        name: firstName + ' ' + lastName
+        name: firstName + ' ' + lastName,
+        id: newUser.id
       }));
       
       showMessage(msg, 'Account created! Redirecting...', 'success');
-      setTimeout(() => { window.location.href = '../index.html'; }, 1500);
+      setTimeout(() => { 
+        if (typeof window.updateAuthNav === 'function') window.updateAuthNav();
+        window.location.href = 'index.html'; 
+      }, 1000);
     });
   })();
+(function initProductCart() {
+  const addToCartBtns = document.querySelectorAll('.add-to-cart');
+  if (!addToCartBtns.length) return;
 
+  function updateBadge(n) {
+    document.querySelectorAll('.cart-count, #cart-count, [data-cart-badge]').forEach(function(el) {
+      el.textContent = n;
+    });
+  }
+
+  function getLocalCart() {
+    try {
+      return JSON.parse(localStorage.getItem('schecter_cart') || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveLocalCart(cart) {
+    localStorage.setItem('schecter_cart', JSON.stringify(cart));
+  }
+
+  function localAdd(btn) {
+    var cart = getLocalCart();
+    var pid = btn.dataset.productId || btn.dataset.id;
+    var name = btn.dataset.name;
+    var price = parseFloat(btn.dataset.price) || 0;
+    var image = btn.dataset.image || '';
+    
+    var found = cart.find(function(i) { return String(i.product_id) === String(pid) || String(i.id) === String(pid); });
+    
+    if (found) {
+      found.quantity = (found.quantity || 1) + 1;
+    } else {
+      cart.push({ 
+        product_id: pid, 
+        id: pid, 
+        name: name, 
+        price: price, 
+        image: image, 
+        quantity: 1 
+      });
+    }
+    
+    saveLocalCart(cart);
+    
+    var total = cart.reduce(function(s, i) { return s + (i.quantity || 1); }, 0);
+    updateBadge(total);
+    
+    var originalText = btn.textContent;
+    btn.textContent = '✓ Added!';
+    btn.disabled = true;
+    setTimeout(function() { 
+      btn.textContent = originalText; 
+      btn.disabled = false; 
+    }, 1500);
+    
+    return true;
+  }
+
+  addToCartBtns.forEach(function(btn) {
+    if (btn._productCartAttached) return;
+    btn._productCartAttached = true;
+    
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      var productId = parseInt(btn.dataset.productId) || parseInt(btn.dataset.id);
+      if (!productId) {
+        localAdd(btn);
+        return;
+      }
+      
+      btn.classList.add('loading');
+      btn.disabled = true;
+      
+      fetch(window.location.href, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_id: productId,
+          quantity: 1
+        })
+      })
+      .then(function(response) {
+        if (!response.ok) throw new Error('Network error');
+        return response.json();
+      })
+      .then(function(data) {
+        if (data && data.success) {
+          if (data.cart_count !== undefined) {
+            updateBadge(data.cart_count);
+          }
+          var cart = getLocalCart();
+          var existing = cart.find(function(i) { return String(i.product_id) === String(productId) || String(i.id) === String(productId); });
+          if (existing) {
+            existing.quantity = (existing.quantity || 1) + 1;
+          } else {
+            cart.push({
+              product_id: productId,
+              id: productId,
+              name: btn.dataset.name,
+              price: parseFloat(btn.dataset.price) || 0,
+              image: btn.dataset.image || '',
+              quantity: 1
+            });
+          }
+          saveLocalCart(cart);
+          
+          var originalText = btn.textContent;
+          btn.textContent = '✓ Added!';
+          setTimeout(function() { 
+            btn.textContent = originalText; 
+            btn.disabled = false; 
+            btn.classList.remove('loading');
+          }, 1500);
+          
+        } else if (data && data.message === 'not_logged_in') {
+          localAdd(btn);
+          btn.classList.remove('loading');
+        } else {
+          localAdd(btn);
+          btn.classList.remove('loading');
+        }
+      })
+      .catch(function(err) {
+        console.log('PHP cart fallback:', err);
+        localAdd(btn);
+        btn.classList.remove('loading');
+      });
+    });
+  });
+  
+  var localCart = getLocalCart();
+  var localTotal = localCart.reduce(function(s, i) { return s + (i.quantity || 1); }, 0);
+  if (localTotal > 0) {
+    updateBadge(localTotal);
+  }
+  
+})();
 })();
 
 function initAccountPage() {
@@ -366,13 +528,12 @@ function initAccountPage() {
   const user = window.getCurrentUser();
   
   if (!user) {
-    window.location.href = 'login.php';
+    window.location.href = 'login.html';
     return;
   }
   
   const allUsers = JSON.parse(localStorage.getItem('schecterUsers')) || [];
   const fullUser = allUsers.find(u => u.email === user.email) || {};
-  
   
   const emailEls = document.querySelectorAll('#accountEmail, #profileEmail');
   emailEls.forEach(el => { if (el) el.textContent = user.email || '-'; });
@@ -388,24 +549,22 @@ function initAccountPage() {
     initialsEl.textContent = initials.toUpperCase() || 'U';
   }
   
-  const memberSince = fullUser.createdAt ? new Date(fullUser.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '2026';
+  const memberSince = fullUser.createdAt 
+    ? new Date(fullUser.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) 
+    : '2026';
   const memberEls = document.querySelectorAll('#memberSince, #profileMemberSince');
   memberEls.forEach(el => { if (el) el.textContent = memberSince; });
   
-  
   const userCart = fullUser.cart || window.getCart?.() || [];
   const cartCount = userCart.reduce((sum, item) => sum + (parseInt(item.quantity) || 1), 0);
-  
   const cartEl = document.getElementById('cartItems');
   if (cartEl) cartEl.textContent = cartCount;
-  
   
   const ordersList = document.getElementById('ordersList');
   if (ordersList) {
     const userOrders = fullUser.orders || [];
-    
     if (userOrders.length === 0) {
-      ordersList.innerHTML = '<p class="no-orders">No orders yet. <a href="../html/products.html">Start shopping!</a></p>';
+      ordersList.innerHTML = '<p class="no-orders">No orders yet. <a href="products.html">Start shopping!</a></p>';
     } else {
       let html = '';
       userOrders.slice(0, 3).forEach(order => {
@@ -425,7 +584,7 @@ function initAccountPage() {
     let html = '';
     userCart.slice(0, 2).forEach(item => {
       html += '<div class="cart-preview-item">' +
-        '<img src="' + (item.image || '../images/placeholder.jpg') + '" alt="' + item.name + '" class="preview-img">' +
+        '<img src="' + (item.image || 'placeholder.jpg') + '" alt="' + item.name + '" class="preview-img">' +
         '<div class="preview-info">' +
           '<p class="preview-name">' + item.name + '</p>' +
           '<p class="preview-qty">Qty: ' + (item.quantity || 1) + '</p>' +
@@ -439,24 +598,18 @@ function initAccountPage() {
     cartPreview.innerHTML = html;
   }
   
-  
   const signOutBtn = document.getElementById('signOutBtn');
   if (signOutBtn) {
     signOutBtn.onclick = function(e) {
       e.preventDefault();
       if (confirm('Are you sure you want to sign out?')) {
         window.logout();
-        if (typeof window.updateAuthNav === 'function') {
-          window.updateAuthNav();
-        }
-        window.location.href = '../index.html';
+        window.location.href = 'index.html';
       }
     };
   }
   
-  if (typeof window.updateCartBadge === 'function') {
-    window.updateCartBadge();
-  }
+  if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -472,25 +625,32 @@ function closeNav() {
 }
 
 function openModal() {
-  document.getElementById("promoModal").style.display = "block";
-  document.body.style.overflow = "hidden";
+  const modal = document.getElementById("promoModal");
+  if (modal) {
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden";
+  }
 }
 
 function closeModal() {
-  document.getElementById("promoModal").style.display = "none";
-  document.body.style.overflow = "";
+  const modal = document.getElementById("promoModal");
+  if (modal) {
+    modal.style.display = "none";
+    document.body.style.overflow = "";
+  }
 }
 
 window.onclick = function(event) {
   const modal = document.getElementById("promoModal");
-  if (event.target === modal) {
+  if (modal && event.target === modal) {
     closeModal();
   }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   const hasSeenModal = sessionStorage.getItem('schecterModalSeen');
-  if (!hasSeenModal) {
+  const modal = document.getElementById('promoModal');
+  if (!hasSeenModal && modal) {
     setTimeout(openModal, 1000);
     sessionStorage.setItem('schecterModalSeen', 'true');
   }
@@ -501,8 +661,7 @@ let slideIndex = 0;
 function showSlide(index) {
   const slides = document.querySelectorAll('.carousel-slide');
   const dots = document.querySelectorAll('.dot');
-  
-  if (!slides.length) return;  
+  if (!slides.length) return;
 
   if (index >= slides.length) slideIndex = 0;
   else if (index < 0) slideIndex = slides.length - 1;
@@ -511,7 +670,6 @@ function showSlide(index) {
   slides.forEach((slide, i) => {
     slide.classList.toggle('active', i === slideIndex);
   });
-  
   dots.forEach((dot, i) => {
     dot.classList.toggle('active', i === slideIndex);
   });
@@ -523,7 +681,7 @@ function moveSlide(direction) {
 }
 
 function currentSlide(index) {
-  showSlide(index - 1);   
+  showSlide(index - 1);
   resetAutoSlide();
 }
 
@@ -532,10 +690,7 @@ let autoSlideInterval;
 function startAutoSlide() {
   const slides = document.querySelectorAll('.carousel-slide');
   if (!slides.length) return;
-  
-  autoSlideInterval = setInterval(() => {
-    moveSlide(1);
-  }, 5000);
+  autoSlideInterval = setInterval(() => moveSlide(1), 5000);
 }
 
 function resetAutoSlide() {
@@ -548,7 +703,6 @@ document.addEventListener('DOMContentLoaded', function() {
   if (slides.length > 0) {
     showSlide(0);
     startAutoSlide();
-    
     const carousel = document.querySelector('.carousel-container');
     if (carousel) {
       carousel.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));
@@ -569,38 +723,22 @@ document.querySelectorAll('.featured, .reviews, .bio, .featured-videos')
   .forEach(el => observer.observe(el));
 
 window.animateCarouselSlide = function(direction) {
-  const track = document.querySelector('.carousel-track');
   const slides = document.querySelectorAll('.carousel-slide');
   const activeSlide = document.querySelector('.carousel-slide.active');
-  
   if (!activeSlide) return;
-  
+
   activeSlide.classList.add('fade-out');
-  
   setTimeout(() => {
     const currentIndex = Array.from(slides).indexOf(activeSlide);
-    let nextIndex = direction === 'next' 
-      ? (currentIndex + 1) % slides.length 
+    let nextIndex = direction === 'next'
+      ? (currentIndex + 1) % slides.length
       : (currentIndex - 1 + slides.length) % slides.length;
     
     const nextSlide = slides[nextIndex];
-    
     activeSlide.classList.remove('active', 'fade-out');
     nextSlide.classList.add('active');
-    
-    if (direction === 'next') {
-      nextSlide.classList.add('slide-next');
-    } else {
-      nextSlide.classList.add('slide-prev');
-    }
-    
     document.querySelectorAll('.dot').forEach((dot, i) => {
       dot.classList.toggle('active', i === nextIndex);
     });
-    
-    setTimeout(() => {
-      nextSlide.classList.remove('slide-next', 'slide-prev');
-    }, 500);
-    
   }, 300);
 };
