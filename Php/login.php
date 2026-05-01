@@ -45,7 +45,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         name: "' . addslashes($user["first_name"]) . '",
                         id: "' . (int)$user["id"] . '"
                     }));
-                    // Trigger auth update events for any open tabs
                     window.dispatchEvent(new Event("storage"));
                     window.location.href = "' . $redirect . '";
                     </script></body></html>';

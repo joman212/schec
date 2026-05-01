@@ -4,7 +4,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
     $data = json_decode(file_get_contents('php://input'), true);
 
-    // Bridge localStorage auth with PHP: use session if set, otherwise fallback to POSTed user_id
     $user_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : (int)($data['user_id'] ?? 0);
 
     if ($user_id <= 0) {
@@ -26,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Insert or update quantity if product already in cart
     $stmt = $conn->prepare(
         "INSERT INTO cart (user_id, product_id, quantity)
          VALUES (?, ?, ?)

@@ -171,15 +171,38 @@
     window.updateCartBadge();
   };
 
-  window.renderCartDisplay = function() {
-    const container = document.getElementById('cartContainer');
-    const summary = document.getElementById('cartSummary');
-    const totalEl = document.getElementById('cartTotal');
-    
-    if (!container) return;
-    
-    const cart = getCart();
-    
+window.renderCartDisplay = function() {
+  const container = document.getElementById('cartContainer');
+  const summary = document.getElementById('cartSummary');
+  const totalEl = document.getElementById('cartTotal');
+  if (!container) return;
+
+  if (window.location.pathname.includes('cart.php')) {
+    fetch('cart.php', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'fetch' })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && data.items) {
+        localStorage.setItem('userCart', JSON.stringify(data.items));
+        renderCartFromItems(data.items);
+        return;
+      }
+      renderCartFromItems(getCart());
+    })
+    .catch(err => {
+      console.log('Cart fetch failed:', err);
+      renderCartFromItems(getCart());
+    });
+    return;
+  }
+
+  renderCartFromItems(getCart());
+
+  function renderCartFromItems(cart) {
     if (cart.length === 0) {
       container.innerHTML = '<div class="empty-cart"><p>Your cart is empty.</p><p><a href="products.html">Continue Shopping</a></p></div>';
       if (summary) summary.style.display = 'none';
@@ -187,43 +210,71 @@
       window.updateCartBadge();
       return;
     }
-    
+
     let html = '<div class="cart-items">';
     let total = 0;
+
+cart.forEach(function(item, index) {
+  const price = parseFloat(item.price) || 0;
+  const qty = parseInt(item.quantity) || 1;
+  const itemTotal = price * qty;
+  total += itemTotal;
+
+  const rawImg = item.image || '';
+  let fixedImg = rawImg;
+  
+  if (rawImg && !rawImg.startsWith('http') && !rawImg.startsWith('//')) {
+    let cleanPath = rawImg.replace(/^\.\.\/+|^\/+/, '');
     
-    cart.forEach((item, index) => {
-      const price = parseFloat(item.price) || 0;
-      const qty = parseInt(item.quantity) || 1;
-      const itemTotal = price * qty;
-      total += itemTotal;
-      
-      html += '<div class="cart-item" data-index="' + index + '">' +
-        '<img src="' + (item.image || 'placeholder.jpg') + '" alt="' + item.name + '" class="cart-item-image" onerror="this.src=\'https://via.placeholder.com/200\'">' +
-        '<div class="cart-item-info">' +
-          '<h3><a href="' + item.id + '.html">' + item.name + '</a></h3>' +
-          '<div class="cart-item-price">Price: $' + formatPrice(price) + '</div>' +
-          '<div class="cart-item-quantity">Quantity: ' + qty + '</div>' +
-          '<div class="cart-item-price">Subtotal: $' + formatPrice(itemTotal) + '</div>' +
-          '<button class="remove-btn" data-index="' + index + '">Remove</button>' +
-        '</div>' +
-      '</div>';
-    });
-    
+    fixedImg = '../' + cleanPath;
+  } else if (!rawImg) {
+    fixedImg = '../images/placeholder.jpg';
+  }
+
+  html += '<div class="cart-item" data-index="' + index + '">' +
+    '<img src="' + fixedImg + '" alt="' + item.name + '" class="cart-item-image" onerror="this.src=\'../images/placeholder.jpg\'">' +
+    '<div class="cart-item-info">' +
+      '<h3><a href="' + item.id + '.html">' + item.name + '</a></h3>' +
+      '<div class="cart-item-price">Price: $' + formatPrice(price) + '</div>' +
+      '<div class="cart-item-quantity">Quantity: ' + qty + '</div>' +
+      '<div class="cart-item-price">Subtotal: $' + formatPrice(itemTotal) + '</div>' +
+      '<button class="remove-btn" data-index="' + index + '" data-id="' + item.id + '">Remove</button>' +
+    '</div>' +
+  '</div>';
+});
     html += '</div>';
     container.innerHTML = html;
-    
+
     if (totalEl) totalEl.textContent = formatPrice(total);
     if (summary) summary.style.display = 'block';
-    
-    document.querySelectorAll('.remove-btn').forEach(btn => {
+
+    document.querySelectorAll('.remove-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        window.removeItem(parseInt(this.getAttribute('data-index')));
+        const index = parseInt(this.getAttribute('data-index'));
+        const productId = this.getAttribute('data-id');
+
+        if (window.location.pathname.includes('cart.php') && productId) {
+          fetch('cart.php', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'remove', product_id: productId })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              window.renderCartDisplay(); 
+            }
+          });
+        } else {
+          window.removeItem(index); 
+        }
       });
     });
-    
-    window.updateCartBadge();
-  };
 
+    window.updateCartBadge();
+  }
+};
   function initImageGallery() {
     document.querySelectorAll('.image-gallery').forEach(gallery => {
       const mainImg = gallery.querySelector('.main-image img');
@@ -337,143 +388,143 @@
     });
   })();
 
-  (function initProductCart() {
-    const addToCartBtns = document.querySelectorAll('.add-to-cart');
-    if (!addToCartBtns.length) return;
+(function initProductCart() {
+  const addToCartBtns = document.querySelectorAll('.add-to-cart');
+  if (!addToCartBtns.length) return;
 
-    function updateBadge(n) {
-      document.querySelectorAll('.cart-count, #cart-count, [data-cart-badge]').forEach(function(el) {
-        el.textContent = n;
+  function updateBadge(n) {
+    document.querySelectorAll('.cart-count, #cart-count, [data-cart-badge]').forEach(function(el) {
+      el.textContent = n;
+    });
+  }
+
+  function getLocalCart() {
+    try {
+      return JSON.parse(localStorage.getItem('userCart') || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveLocalCart(cart) {
+    localStorage.setItem('userCart', JSON.stringify(cart));
+  }
+
+  function localAdd(btn) {
+    var cart = getLocalCart();
+    var pid = btn.dataset.productId || btn.dataset.id;
+    var name = btn.dataset.name;
+    var price = parseFloat(btn.dataset.price) || 0;
+    var image = btn.dataset.image || '';
+    
+    var found = cart.find(function(i) { return String(i.id) === String(pid); });
+    
+    if (found) {
+      found.quantity = (found.quantity || 1) + 1;
+    } else {
+      cart.push({ 
+        id: String(pid),   
+        name: name, 
+        price: price, 
+        image: image, 
+        quantity: 1 
       });
     }
+    
+    saveLocalCart(cart);
+    var total = cart.reduce(function(s, i) { return s + (i.quantity || 1); }, 0);
+    updateBadge(total);
+    
+    var originalText = btn.textContent;
+    btn.textContent = '✓ Added!';
+    btn.disabled = true;
+    setTimeout(function() { 
+      btn.textContent = originalText; 
+      btn.disabled = false; 
+    }, 1500);
+    
+    return true;
+  }
 
-    function getLocalCart() {
-      try {
-        return JSON.parse(localStorage.getItem('userCart') || '[]');
-      } catch (e) {
-        return [];
-      }
-    }
-
-    function saveLocalCart(cart) {
-      localStorage.setItem('userCart', JSON.stringify(cart));
-    }
-
-    function localAdd(btn) {
-      var cart = getLocalCart();
-      var pid = btn.dataset.productId || btn.dataset.id;
-      var name = btn.dataset.name;
-      var price = parseFloat(btn.dataset.price) || 0;
-      var image = btn.dataset.image || '';
+  addToCartBtns.forEach(function(btn) {
+    if (btn._productCartAttached) return;
+    btn._productCartAttached = true;
+    
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
       
-      var found = cart.find(function(i) { return String(i.id) === String(pid); });
-      
-      if (found) {
-        found.quantity = (found.quantity || 1) + 1;
-      } else {
-        cart.push({ 
-          id: String(pid), 
-          name: name, 
-          price: price, 
-          image: image, 
-          quantity: 1 
-        });
+      var productId = parseInt(btn.dataset.productId) || parseInt(btn.dataset.id);
+      if (!productId) {
+        localAdd(btn);
+        return;
       }
       
-      saveLocalCart(cart);
-      var total = cart.reduce(function(s, i) { return s + (i.quantity || 1); }, 0);
-      updateBadge(total);
-      
-      var originalText = btn.textContent;
-      btn.textContent = '✓ Added!';
+      btn.classList.add('loading');
       btn.disabled = true;
-      setTimeout(function() { 
-        btn.textContent = originalText; 
-        btn.disabled = false; 
-      }, 1500);
       
-      return true;
-    }
-
-    addToCartBtns.forEach(function(btn) {
-      if (btn._productCartAttached) return;
-      btn._productCartAttached = true;
-      
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        var productId = parseInt(btn.dataset.productId) || parseInt(btn.dataset.id);
-        if (!productId) {
-          localAdd(btn);
-          return;
-        }
-        
-        btn.classList.add('loading');
-        btn.disabled = true;
-        
-        fetch(window.location.href, {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            product_id: productId,
-            quantity: 1
-          })
+      fetch(window.location.href, {
+        method: 'POST',
+        credentials: 'include',  
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_id: productId,
+          quantity: 1
         })
-        .then(function(response) {
-          if (!response.ok) throw new Error('Network error');
-          return response.json();
-        })
-        .then(function(data) {
-          if (data && data.success) {
-            if (data.cart_count !== undefined) {
-              updateBadge(data.cart_count);
-            }
-            var cart = getLocalCart();
-            var existing = cart.find(function(i) { return String(i.id) === String(productId); });
-            if (existing) {
-              existing.quantity = (existing.quantity || 1) + 1;
-            } else {
-              cart.push({
-                id: String(productId),
-                name: btn.dataset.name,
-                price: parseFloat(btn.dataset.price) || 0,
-                image: btn.dataset.image || '',
-                quantity: 1
-              });
-            }
-            saveLocalCart(cart);
-            
-            var originalText = btn.textContent;
-            btn.textContent = '✓ Added!';
-            setTimeout(function() { 
-              btn.textContent = originalText; 
-              btn.disabled = false; 
-              btn.classList.remove('loading');
-            }, 1500);
-            
-          } else if (data && data.message === 'not_logged_in') {
-            localAdd(btn);
-            btn.classList.remove('loading');
-          } else {
-            localAdd(btn);
-            btn.classList.remove('loading');
+      })
+      .then(function(response) {
+        if (!response.ok) throw new Error('Network error');
+        return response.json();
+      })
+      .then(function(data) {
+        if (data && data.success) {
+          if (data.cart_count !== undefined) {
+            updateBadge(data.cart_count);
           }
-        })
-        .catch(function(err) {
-          console.log('PHP cart fallback:', err);
+          var cart = getLocalCart();
+          var existing = cart.find(function(i) { return String(i.id) === String(productId); });
+          if (existing) {
+            existing.quantity = (existing.quantity || 1) + 1;
+          } else {
+            cart.push({
+              id: String(productId), 
+              name: btn.dataset.name,
+              price: parseFloat(btn.dataset.price) || 0,
+              image: btn.dataset.image || '',
+              quantity: 1
+            });
+          }
+          saveLocalCart(cart);
+          
+          var originalText = btn.textContent;
+          btn.textContent = '✓ Added!';
+          setTimeout(function() { 
+            btn.textContent = originalText; 
+            btn.disabled = false; 
+            btn.classList.remove('loading');
+          }, 1500);
+          
+        } else if (data && data.message === 'not_logged_in') {
           localAdd(btn);
           btn.classList.remove('loading');
-        });
+        } else {
+          localAdd(btn);
+          btn.classList.remove('loading');
+        }
+      })
+      .catch(function(err) {
+        console.log('PHP cart fallback:', err);
+        localAdd(btn);
+        btn.classList.remove('loading');
       });
     });
-    
-    var localCart = getLocalCart();
-    var localTotal = localCart.reduce(function(s, i) { return s + (i.quantity || 1); }, 0);
-    if (localTotal > 0) {
-      updateBadge(localTotal);
-    }
-  })();
+  });
+  
+  var localCart = getLocalCart();
+  var localTotal = localCart.reduce(function(s, i) { return s + (i.quantity || 1); }, 0);
+  if (localTotal > 0) {
+    updateBadge(localTotal);
+  }
+})();
 
   (function() {
     const form = document.getElementById('signupForm');

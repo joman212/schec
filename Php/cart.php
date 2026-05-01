@@ -3,15 +3,20 @@ session_start();
 $conn = mysqli_connect("localhost", "root", "", "schecter_db");
 if (!$conn) { die("DB connection failed"); }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+$logged_in = isset($_SESSION['user_id']);
+$user_id = $logged_in ? (int)$_SESSION['user_id'] : 0;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && 
+    !empty($_SERVER['CONTENT_TYPE']) && 
+    strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+    
     header('Content-Type: application/json');
     
-    if (!isset($_SESSION['user_id'])) {
+    if (!$logged_in) {
         echo json_encode(['success' => false, 'message' => 'not_logged_in']);
         exit;
     }
     
-    $user_id = (int)$_SESSION['user_id'];
     $rawInput = file_get_contents('php://input');
     $data = $rawInput ? json_decode($rawInput, true) : [];
     $action = $data['action'] ?? '';
@@ -26,7 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
         $items = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $items[] = $row;
+            $items[] = [
+                'id' => (string)$row['id'],
+                'name' => $row['name'],
+                'price' => (float)$row['price'],
+                'image' => $row['image'],
+                'quantity' => (int)$row['quantity']
+            ];
         }
         echo json_encode(['success' => true, 'items' => $items]);
         exit;
@@ -55,7 +66,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-$logged_in = isset($_SESSION['user_id']);
+$result = mysqli_query($conn, 
+    "SELECT c.quantity, p.id, p.name, p.price, p.image 
+     FROM cart c 
+     JOIN products p ON c.product_id = p.id 
+     WHERE c.user_id = $user_id"
+);
+$items = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $items[] = [
+        'id' => (string)$row['id'],
+        'name' => $row['name'],
+        'price' => (float)$row['price'],
+        'image' => $row['image'],
+        'quantity' => (int)$row['quantity']
+    ];
+}
+
+echo '<script>localStorage.setItem("userCart", ' . json_encode($items) . ');</script>';
+
 mysqli_close($conn);
 ?>
 <!DOCTYPE html>
