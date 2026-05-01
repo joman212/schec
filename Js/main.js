@@ -82,7 +82,10 @@
       if (isLogin || isSignup) {
         if (user) {
           link.textContent = 'My Account';
-          link.href = window.location.pathname.includes('html/') ? 'account.html' : 'html/account.html';
+          var _p = window.location.pathname;
+          link.href = _p.includes('/html/') ? 'account.html'
+                    : _p.includes('/php/')  ? '../html/account.html'
+                    :                         'html/account.html';
         } else {
           link.textContent = isSignup ? 'Sign Up' : 'Sign In';
           link.href = isSignup 
@@ -594,82 +597,114 @@ cart.forEach(function(item, index) {
 
 })();
 
+function showCheckoutMsg(text, type) {
+  const el = document.getElementById('checkoutMessage');
+  if (!el) return;
+  el.textContent    = text;
+  el.style.display  = 'block';
+  el.style.background = type === 'success' ? '#1a4731' : '#4a1a1a';
+  el.style.color      = type === 'success' ? '#4ade80' : '#f87171';
+  el.style.border     = '1px solid ' + (type === 'success' ? '#4ade80' : '#f87171');
+}
+
+function placeOrder() {
+  const requiredFields = [
+    document.getElementById('co-name'),
+    document.getElementById('co-address'),
+    document.getElementById('co-city'),
+    document.getElementById('co-state'),
+    document.getElementById('co-postal'),
+    document.getElementById('co-phone'),
+    document.getElementById('co-email')
+  ];
+
+  for (const field of requiredFields) {
+    if (!field || !field.value.trim()) {
+      showCheckoutMsg('Please fill in all shipping fields.', 'error');
+      if (field) field.focus();
+      return;
+    }
+  }
+
+  const paymentEl = document.querySelector('input[name="payment"]:checked');
+  if (!paymentEl) {
+    showCheckoutMsg('Please select a payment method.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('placeOrderBtn');
+  btn.disabled    = true;
+  btn.textContent = 'Placing order...';
+
+  fetch('checkout.php', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'place_order' })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success) {
+      localStorage.removeItem('userCart');
+      if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
+
+      showCheckoutMsg(
+        '✓ Order #' + data.order_id + ' placed successfully! Total: $' + parseFloat(data.total).toFixed(2),
+        'success'
+      );
+
+      var form = document.getElementById('checkoutForm');
+      if (form) {
+        form.style.opacity       = '0.4';
+        form.style.pointerEvents = 'none';
+      }
+      btn.style.display = 'none';
+
+      setTimeout(function() {
+        window.location.href = '../html/account.html';
+      }, 2500);
+    } else {
+      showCheckoutMsg(
+        data.message === 'not_logged_in'
+          ? 'You must be signed in to place an order.'
+          : (data.message || 'Order failed. Please try again.'),
+        'error'
+      );
+      btn.disabled    = false;
+      btn.textContent = 'Place Order';
+    }
+  })
+  .catch(function() {
+    showCheckoutMsg('Network error. Please try again.', 'error');
+    btn.disabled    = false;
+    btn.textContent = 'Place Order';
+  });
+}
+
 function initAccountPage() {
   if (!window.location.href.includes('account.html')) return;
-  
+
   const user = window.getCurrentUser();
-  
+
   if (!user) {
     window.location.href = window.location.pathname.includes('php/') ? '../php/login.php' : 'php/login.php';
     return;
   }
-  
-  const allUsers = JSON.parse(localStorage.getItem('schecterUsers')) || [];
-  const fullUser = allUsers.find(u => u.email === user.email) || {};
-  
-  const emailEls = document.querySelectorAll('#accountEmail, #profileEmail');
-  emailEls.forEach(el => { if (el) el.textContent = user.email || '-'; });
-  
-  const name = user.name || (fullUser.firstName + ' ' + fullUser.lastName) || 'User';
-  const nameEls = document.querySelectorAll('#profileName');
-  nameEls.forEach(el => { if (el) el.textContent = name; });
-  
+
+  const name = (user.name || 'User').trim();
+  document.querySelectorAll('#accountEmail, #profileEmail').forEach(el => {
+    if (el) el.textContent = user.email || '-';
+  });
+  document.querySelectorAll('#profileName').forEach(el => {
+    if (el) el.textContent = name;
+  });
+
   const initialsEl = document.getElementById('accountInitials');
-  if (initialsEl && name) {
-    const names = name.trim().split(' ');
-    const initials = (names[0]?.[0] || '') + (names[1]?.[0] || '');
-    initialsEl.textContent = initials.toUpperCase() || 'U';
+  if (initialsEl) {
+    const parts = name.split(' ');
+    initialsEl.textContent = ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || 'U';
   }
-  
-  const memberSince = fullUser.createdAt 
-    ? new Date(fullUser.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) 
-    : '2026';
-  const memberEls = document.querySelectorAll('#memberSince, #profileMemberSince');
-  memberEls.forEach(el => { if (el) el.textContent = memberSince; });
-  
-  const userCart = fullUser.cart || window.getCart?.() || [];
-  const cartCount = userCart.reduce((sum, item) => sum + (parseInt(item.quantity) || 1), 0);
-  const cartEl = document.getElementById('cartItems');
-  if (cartEl) cartEl.textContent = cartCount;
-  
-  const ordersList = document.getElementById('ordersList');
-  if (ordersList) {
-    const userOrders = fullUser.orders || [];
-    if (userOrders.length === 0) {
-      ordersList.innerHTML = '<p class="no-orders">No orders yet. <a href="products.html">Start shopping!</a></p>';
-    } else {
-      let html = '';
-      userOrders.slice(0, 3).forEach(order => {
-        html += '<div class="order-item">' +
-          '<span class="order-id">#' + order.id + '</span>' +
-          '<span class="order-date">' + new Date(order.date).toLocaleDateString() + '</span>' +
-          '<span class="order-total">$' + (order.total || '0.00') + '</span>' +
-          '<span class="order-status status-' + (order.status || 'pending') + '">' + (order.status || 'Pending') + '</span>' +
-        '</div>';
-      });
-      ordersList.innerHTML = html;
-    }
-  }
-    
-  const cartPreview = document.getElementById('cartPreview');
-  if (cartPreview && userCart.length > 0) {
-    let html = '';
-    userCart.slice(0, 2).forEach(item => {
-      html += '<div class="cart-preview-item">' +
-        '<img src="' + (item.image || 'placeholder.jpg') + '" alt="' + item.name + '" class="preview-img">' +
-        '<div class="preview-info">' +
-          '<p class="preview-name">' + item.name + '</p>' +
-          '<p class="preview-qty">Qty: ' + (item.quantity || 1) + '</p>' +
-        '</div>' +
-        '<span class="preview-price">$' + (parseFloat(item.price) || 0).toFixed(2) + '</span>' +
-      '</div>';
-    });
-    if (userCart.length > 2) {
-      html += '<p class="preview-more">+ ' + (userCart.length - 2) + ' more items</p>';
-    }
-    cartPreview.innerHTML = html;
-  }
-  
+
   const signOutBtn = document.getElementById('signOutBtn');
   if (signOutBtn) {
     signOutBtn.onclick = function(e) {
@@ -680,8 +715,126 @@ function initAccountPage() {
       }
     };
   }
-  
+
   if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
+
+  const apiBase = '../php/checkout.php';
+
+  const cartPreview  = document.getElementById('cartPreview');
+  const cartCountEl  = document.getElementById('cartItems');
+
+  fetch(apiBase + '?action=get_cart', { credentials: 'include' })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success || !data.items) {
+        if (cartPreview) cartPreview.innerHTML = '<p class="empty-cart-preview">Your cart is empty. <a href="../html/products.html">Browse products</a></p>';
+        if (cartCountEl) cartCountEl.textContent = '0';
+        return;
+      }
+
+      const items = data.items;
+      const totalQty = items.reduce((s, i) => s + (i.quantity || 1), 0);
+
+      localStorage.setItem('userCart', JSON.stringify(items));
+      if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
+
+      if (cartCountEl) cartCountEl.textContent = totalQty;
+
+      if (cartPreview) {
+        if (items.length === 0) {
+          cartPreview.innerHTML = '<p class="empty-cart-preview">Your cart is empty. <a href="../html/products.html">Browse products</a></p>';
+        } else {
+          let html = '';
+          items.slice(0, 3).forEach(function(item) {
+            const rawImg = item.image || '';
+            const img = rawImg && !rawImg.startsWith('http') ? '../' + rawImg.replace(/^\.\.\/+|^\/+/, '') : (rawImg || '../images/placeholder.jpg');
+            html += '<div class="cart-preview-item">' +
+              '<img src="' + img + '" alt="' + item.name + '" class="preview-img" onerror="this.src=\'../images/placeholder.jpg\'">' +
+              '<div class="preview-info">' +
+                '<p class="preview-name">' + item.name + '</p>' +
+                '<p class="preview-qty">Qty: ' + (item.quantity || 1) + '</p>' +
+              '</div>' +
+              '<span class="preview-price">$' + (parseFloat(item.price) || 0).toFixed(2) + '</span>' +
+            '</div>';
+          });
+          if (items.length > 3) {
+            html += '<p class="preview-more">+ ' + (items.length - 3) + ' more item(s)</p>';
+          }
+          cartPreview.innerHTML = html;
+        }
+      }
+    })
+    .catch(function() {
+      if (cartPreview) cartPreview.innerHTML = '<p class="empty-cart-preview">Could not load cart.</p>';
+    });
+
+  const ordersList   = document.getElementById('ordersList');
+  const totalOrderEl = document.getElementById('totalOrders');
+  const memberSinceEls = document.querySelectorAll('#memberSince, #profileMemberSince');
+
+  fetch(apiBase + '?action=get_orders', { credentials: 'include' })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) {
+        if (ordersList) ordersList.innerHTML = '<p class="no-orders">No orders yet. <a href="../html/products.html">Start shopping!</a></p>';
+        if (totalOrderEl) totalOrderEl.textContent = '0';
+        return;
+      }
+
+      const orders = data.orders || [];
+
+      if (totalOrderEl) totalOrderEl.textContent = orders.length;
+
+      if (orders.length > 0) {
+        const earliest = orders[orders.length - 1].created_at;
+        const since = new Date(earliest).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        memberSinceEls.forEach(el => { if (el) el.textContent = since; });
+      } else {
+        memberSinceEls.forEach(el => { if (el) el.textContent = '2026'; });
+      }
+
+      if (!ordersList) return;
+
+      if (orders.length === 0) {
+        ordersList.innerHTML = '<p class="no-orders">No orders yet. <a href="../html/products.html">Start shopping!</a></p>';
+        return;
+      }
+
+      let html = '';
+      orders.slice(0, 5).forEach(function(order) {
+        const date = new Date(order.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        const statusClass = 'status-' + (order.status || 'pending');
+
+        let itemsHtml = '';
+        if (order.items && order.items.length > 0) {
+          itemsHtml = '<div class="order-item-details" style="font-size:0.8rem;color:#aaa;margin-top:4px;">';
+          order.items.slice(0, 2).forEach(function(it) {
+            itemsHtml += '<span>' + it.name + ' x' + it.quantity + '</span> ';
+          });
+          if (order.items.length > 2) {
+            itemsHtml += '<span>+' + (order.items.length - 2) + ' more</span>';
+          }
+          itemsHtml += '</div>';
+        }
+
+        html += '<div class="order-item">' +
+          '<span class="order-id">#' + order.id + '</span>' +
+          '<span class="order-date">' + date + '</span>' +
+          '<span class="order-total">$' + parseFloat(order.total_amount).toFixed(2) + '</span>' +
+          '<span class="order-status ' + statusClass + '">' + order.status + '</span>' +
+          itemsHtml +
+        '</div>';
+      });
+
+      if (orders.length > 5) {
+        html += '<p style="color:#aaa;font-size:0.85rem;margin-top:8px;">Showing 5 of ' + orders.length + ' orders.</p>';
+      }
+
+      ordersList.innerHTML = html;
+    })
+    .catch(function() {
+      if (ordersList) ordersList.innerHTML = '<p class="no-orders">Could not load orders.</p>';
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -815,3 +968,92 @@ window.animateCarouselSlide = function(direction) {
     });
   }, 300);
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadCart();
+    loadOrders();
+});
+
+async function loadCart() {
+    const container = document.getElementById('cart-container');
+    
+    try {
+        const response = await fetch('checkout.php?action=get_cart', {
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await response.json();
+        
+        if (data.success && data.items?.length > 0) {
+            let html = `<table class="cart-table"><thead><tr><th>Product</th><th>Price</th><th>Qty</th><th>Subtotal</th></tr></thead><tbody>`;
+            let total = 0;
+            
+            data.items.forEach(item => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                html += `
+                    <tr>
+                        <td>
+                            <img src="${item.image}" alt="${item.name}" width="50" style="vertical-align:middle; margin-right:8px;">
+                            ${escapeHtml(item.name)}
+                        </td>
+                        <td>$${parseFloat(item.price).toFixed(2)}</td>
+                        <td>${item.quantity}</td>
+                        <td>$${subtotal.toFixed(2)}</td>
+                    </tr>`;
+            });
+            
+            html += `</tbody></table>
+                     <p><strong>Cart Total: $${total.toFixed(2)}</strong></p>
+                     <a href="checkout.php" class="btn btn-primary">Proceed to Checkout</a>`;
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<p>Your cart is empty. <a href="index.php">Continue shopping</a></p>';
+        }
+    } catch (err) {
+        container.innerHTML = '<p class="error">Failed to load cart.</p>';
+        console.error('Cart error:', err);
+    }
+}
+
+async function loadOrders() {
+    const container = document.getElementById('orders-container');
+    
+    try {
+        const response = await fetch('checkout.php?action=get_orders', {
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await response.json();
+        
+        if (data.success && data.orders?.length > 0) {
+            let html = `<table class="orders-table"><thead><tr><th>Order #</th><th>Date</th><th>Total</th><th>Status</th><th>Details</th></tr></thead><tbody>`;
+            
+            data.orders.forEach(order => {
+                const date = new Date(order.created_at).toLocaleDateString();
+                html += `
+                    <tr>
+                        <td>#${order.id}</td>
+                        <td>${date}</td>
+                        <td>$${parseFloat(order.total_amount).toFixed(2)}</td>
+                        <td><span class="status status-${order.status}">${order.status}</span></td>
+                        <td><a href="#">View</a></td>
+                    </tr>`;
+            });
+            
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<p>You haven\'t placed any orders yet.</p>';
+        }
+    } catch (err) {
+        container.innerHTML = '<p class="error">Failed to load orders.</p>';
+        console.error('Orders error:', err);
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}

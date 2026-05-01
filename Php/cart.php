@@ -131,7 +131,7 @@ content="width=device-width, initial-scale=1.0">
     <div id="cartContainer"><p style="color:#E5E5E5;text-align:center;padding:3rem">Loading cart...</p></div>
     <div id="cartSummary" class="cart-summary" style="display:none">
       <div class="cart-total">Total: $<span id="cartTotal">0.00</span></div>
-      <a href="../html/Checkout.html" class="checkout-btn">Proceed to Checkout</a>
+      <a href="../php/Checkout.php" class="checkout-btn">Proceed to Checkout</a>
     </div>
   </main>
 
