@@ -50,7 +50,7 @@ if($conn==TRUE) {} else { echo"Error. Connection failed!<br>"; die(); }
 ?>
 <h2>Admin Dashboard</h2>
 <h3>Welcome, <?php echo $_SESSION["user_name"]; ?>!</h3>
-<a href="add_product.php" class="btn">Add New Product</a> <a href="logout.php" class="btn">Logout</a>
+<a href="add_product.php" class="btn">Add New Product</a> <a href="login.php?logout=1">Logout</a>
 <hr>
 
 <h3>Quick Stats</h3>

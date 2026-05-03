@@ -1,37 +1,26 @@
 <?php
 session_start();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $first_name=$_POST["first_name"]; 
-    $last_name=$_POST["last_name"]; 
-    $email=$_POST["email"];     
-$password         = $_POST["password"];
-$confirm_password = $_POST["confirm_password"];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $first_name = $_POST['first_name'];
+    $last_name  = $_POST['last_name'];
+    $email      = $_POST['email'];
+    $password   = $_POST['password'];
 
-if ($password != $confirm_password) {
-    echo "Error. Passwords mismatch.<br>";
-    die();
-}
+    if ($password !== $_POST['confirm_password']) die("Error. Passwords do not match.");
 
-$password = password_hash($password, PASSWORD_BCRYPT);
-    
-    $conn= mysqli_connect("localhost","root","","schecter_db");
-    if($conn==TRUE) {
+    $password = password_hash($password, PASSWORD_BCRYPT);
+
+    $conn = new mysqli('localhost', 'root', '', 'schecter_db');
+    $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param('ssss', $first_name, $last_name, $email, $password);
+
+    if ($stmt->execute()) {
+        echo "Account created! <a href='login.php'>Login here</a>";
     } else {
-        echo"Error. Connection failed!<br>"; 
-        die();
+        echo "Error. Account could not be created.";
     }
-    
-    $stmt="INSERT INTO`users`(`first_name`,`last_name`,`email`,`password`) VALUES('$first_name','$last_name','$email','$password')"; 
-    $result= mysqli_query($conn,$stmt); 
-    
-    if($result==FALSE) {
-        echo"Error. Account could not be created.<br>";
-    } else {
-        echo"Account created successfully!<br>";
-        echo"<a href='login.php'>Login here</a>";
-        die();
-    }
+    exit;
 }
 ?>
 <!DOCTYPE html>
