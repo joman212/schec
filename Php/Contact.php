@@ -70,14 +70,6 @@ content="width=device-width, initial-scale=1.0">
         <img src="../images/youtube.png" alt="YouTube"><i class="fab fa-youtube"></i><span>YouTube</span>
     </a>
 </div>
-    <!DOCTYPE html>
-    <html>
-    <body>
-        <h2>Thank You, <?php echo $name; ?>!</h2>
-        <p>Your message was received.</p>
-        <a href="../index.html">Back to Home</a>
-    </body>
-    </html>
 <section class="contact">
     <h1>Contact</h1>
 

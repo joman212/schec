@@ -1,3 +1,41 @@
+<?php
+session_start();
+if(!isset($_SESSION["is_admin"]) || $_SESSION["is_admin"] != TRUE) {
+    echo"Error. Access denied. Admin login required.<br>";
+    echo"<a href='login.php'>Go to Login</a>";
+    die();
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name=$_POST["name"]; 
+    $price=$_POST["price"]; 
+    $description=$_POST["description"]; 
+    $category=$_POST["category"]; 
+    $stock=$_POST["stock"]; 
+    
+    $img=$_FILES["image"]["name"];
+    $target="Images/".$img;
+    move_uploaded_file($_FILES["image"]["tmp_name"],$target);
+    
+    $conn= mysqli_connect("localhost","root","","schecter_db");
+    if($conn==TRUE) {
+    } else {
+        echo"Error. Connection failed!<br>";
+        die();
+    }
+    
+    $stmt="INSERT INTO`products`(`name`,`price`,`image`,`description`,`category`,`stock`) VALUES('$name','$price','$target','$description','$category','$stock')";
+    $result= mysqli_query($conn,$stmt);
+    if($result==FALSE) {
+        echo"Error. Product was not added.<br>";
+    } else {
+        echo"$name was successfully added<br>";
+        echo"<a href='add_product.php' class='btn'>Add Another</a> | <a href='admin_dashboard.php' class='btn'>Back to Dashboard</a>";
+        die();
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,43 +75,6 @@ content="width=device-width, initial-scale=1.0">
     </div>
     <span style="font-size:30px;cursor:pointer;color:#fff;margin-right:15px;" onclick="openNav()">&#9776;</span>
   </header>
-<?php
-session_start();
-if(!isset($_SESSION["is_admin"]) || $_SESSION["is_admin"] != TRUE) {
-    echo"Error. Access denied. Admin login required.<br>";
-    echo"<a href='login.php'>Go to Login</a>";
-    die();
-}
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name=$_POST["name"]; 
-    $price=$_POST["price"]; 
-    $description=$_POST["description"]; 
-    $category=$_POST["category"]; 
-    $stock=$_POST["stock"]; 
-    
-    $img=$_FILES["image"]["name"];
-    $target="Images/".$img;
-    move_uploaded_file($_FILES["image"]["tmp_name"],$target);
-    
-    $conn= mysqli_connect("localhost","root","","schecter_db");
-    if($conn==TRUE) {
-    } else {
-        echo"Error. Connection failed!<br>";
-        die();
-    }
-    
-    $stmt="INSERT INTO`products`(`name`,`price`,`image`,`description`,`category`,`stock`) VALUES('$name','$price','$target','$description','$category','$stock')";
-    $result= mysqli_query($conn,$stmt);
-    if($result==FALSE) {
-        echo"Error. Product was not added.<br>";
-    } else {
-        echo"$name was successfully added<br>";
-        echo"<a href='add_product.php' class='btn'>Add Another</a> | <a href='admin_dashboard.php' class='btn'>Back to Dashboard</a>";
-        die();
-    }
-}
-?>
 <div class="page-wrapper">
     <h1 class="page-title">Add New Product</h1>
     <div class="form-container">

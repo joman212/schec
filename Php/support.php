@@ -7,17 +7,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $message = $_POST["message"];
     $subject = "Support Request";
 
-    $conn = mysqli_connect("localhost", "root", "", "schecter_db");
-    if ($conn == TRUE) {
-        $stmt   = "INSERT INTO `contact_messages`(`name`,`email`,`subject`,`message`) VALUES('$name','$email','$subject','$message')";
-        $result = mysqli_query($conn, $stmt);
-        if ($result == FALSE) {
-            $error = "Error. Message was not sent.";
-        } else {
-            $success = "Thank you, $name! Your message has been received. We'll get back to you within 24-48 hours.";
-        }
+    $conn = new mysqli("localhost", "root", "", "schecter_db");
+    $stmt = $conn->prepare("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param('ssss', $name, $email, $subject, $message);
+
+    if ($stmt->execute()) {
+    $success = "Thank you, $name! Your message has been received.";
     } else {
-        $error = "Error. Connection failed.";
+    $error = "Error. Message was not sent.";
     }
 }
 ?>

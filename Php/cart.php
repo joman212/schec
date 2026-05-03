@@ -83,8 +83,6 @@ while ($row = mysqli_fetch_assoc($result)) {
     ];
 }
 
-echo '<script>localStorage.setItem("userCart", ' . json_encode($items) . ');</script>';
-
 mysqli_close($conn);
 ?>
 <!DOCTYPE html>
@@ -153,6 +151,6 @@ content="width=device-width, initial-scale=1.0">
     </div>
     </footer>
 <script src="../js/main.js"></script>
-
+<script>localStorage.setItem("userCart", ' . json_encode($items) . ');</script>
 </body>
 </html>

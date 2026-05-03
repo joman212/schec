@@ -40,12 +40,7 @@ content="width=device-width, initial-scale=1.0">
   
   <div class="oc-logo" style="padding:0 25px 20px;border-bottom:1px solid #333;margin-bottom:15px;">
     <img src="../images/logo.png" alt="Schecter Guitars" style="height:40px;width:auto;">
-  </div>
-  
-  <div class="oc-logo" style="padding:0 25px 20px;border-bottom:1px solid #333;margin-bottom:15px;">
-    <img src="../../images/logo.png" alt="Schecter Guitars" style="height:40px;width:auto;">
-  </div>
-  
+  </div>  
   <a href="../index.html">Home</a>
   <a href="../html/products.html">Guitars</a>
   <a href="../html/Accessories.html">Accessories</a>
