@@ -1,49 +1,29 @@
 <?php
 session_start();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
-    $data = json_decode(file_get_contents('php://input'), true);
 
-    $user_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : (int)($data['user_id'] ?? 0);
-
-    if ($user_id <= 0) {
+    if (!isset($_SESSION['user_id'])) {
         echo json_encode(['success' => false, 'message' => 'not_logged_in']);
         exit;
     }
 
-    $product_id = isset($data['product_id']) ? (int)$data['product_id'] : 0;
-    $quantity   = isset($data['quantity'])   ? (int)$data['quantity']   : 1;
-
-    if ($product_id <= 0) {
-        echo json_encode(['success' => false, 'message' => 'Invalid product']);
-        exit;
-    }
+    $data = json_decode(file_get_contents('php://input'), true);
+    $product_id = (int)$data['product_id'];
+    $quantity   = (int)$data['quantity'];
+    $user_id    = (int)$_SESSION['user_id'];
 
     $conn = new mysqli('localhost', 'root', '', 'schecter_db');
-    if ($conn->connect_error) {
-        echo json_encode(['success' => false, 'message' => 'DB error']);
-        exit;
-    }
 
-    $stmt = $conn->prepare(
-        "INSERT INTO cart (user_id, product_id, quantity)
-         VALUES (?, ?, ?)
-         ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)"
-    );
+    $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)");
     $stmt->bind_param('iii', $user_id, $product_id, $quantity);
+    $stmt->execute();
 
-    if ($stmt->execute()) {
-        $count_stmt = $conn->prepare("SELECT SUM(quantity) AS total FROM cart WHERE user_id = ?");
-        $count_stmt->bind_param('i', $user_id);
-        $count_stmt->execute();
-        $result = $count_stmt->get_result();
-        $total = (int)($result->fetch_assoc()['total'] ?? 0);
-        echo json_encode(['success' => true, 'cart_count' => $total]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Insert failed']);
-    }
-    $stmt->close();
-    $conn->close();
+    $result = $conn->query("SELECT SUM(quantity) AS total FROM cart WHERE user_id = $user_id");
+    $total  = (int)$result->fetch_assoc()['total'];
+
+    echo json_encode(['success' => true, 'cart_count' => $total]);
     exit;
 }
 ?>

@@ -540,7 +540,7 @@ function initAccountPage() {
       e.preventDefault();
       if (confirm('Are you sure you want to sign out?')) {
         window.logout();
-        window.location.href = 'index.html';
+        window.location.href = '../index.html';
       }
     };
   }

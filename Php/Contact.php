@@ -1,3 +1,21 @@
+<?php
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $conn = mysqli_connect("localhost", "root", "", "schecter_db");
+    if (!$conn) die("Error. Connection failed.");
+
+    $name    = $_POST['name'];
+    $email   = $_POST['email'];
+    $subject = $_POST['subject'];
+    $message = $_POST['message'];
+
+    $stmt = $conn->prepare("INSERT INTO contact_messages (name,email,subject,message) VALUES (?,?,?,?)");
+    $stmt->bind_param('ssss', $name, $email, $subject, $message);
+    $stmt->execute() ? header("Location: ../index.html") : print("Error. Message was not saved.");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,23 +70,6 @@ content="width=device-width, initial-scale=1.0">
         <img src="../images/youtube.png" alt="YouTube"><i class="fab fa-youtube"></i><span>YouTube</span>
     </a>
 </div>
-<?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST["name"];
-    $email = $_POST["email"];
-    $subject = $_POST["subject"];
-    $message = $_POST["message"];
-    
-    $conn = mysqli_connect("localhost","root","","schecter_db");
-    if($conn==TRUE) {
-        $stmt = "INSERT INTO `contact_messages`(`name`,`email`,`subject`,`message`) 
-                 VALUES('$name','$email','$subject','$message')";
-        $result = mysqli_query($conn,$stmt);
-        if($result==FALSE) echo "Error. Message was not saved<br>";
-    } else {
-        echo "Error. Connection failed!<br>";
-    }
-    ?>
     <!DOCTYPE html>
     <html>
     <body>
@@ -77,38 +78,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <a href="../index.html">Back to Home</a>
     </body>
     </html>
-    <?php
-    exit;
-}
-?>
 <section class="contact">
     <h1>Contact</h1>
-    <?php
-    $conn= mysqli_connect("localhost","root","","schecter_db"); 
-if($conn==TRUE) {
-} else {
-    echo"Error. Connection failed!<br>"; 
-    die();
-}
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name=$_POST["name"]; 
-    $email=$_POST["email"]; 
-    $subject=$_POST["subject"]; 
-    $message=$_POST["message"]; 
-    
-    include 'db_connect.php';
-    
-    $stmt="INSERT INTO`contact_messages`(`name`,`email`,`subject`,`message`) VALUES('$name','$email','$subject','$message')"; 
-    $result= mysqli_query($conn,$stmt); 
-    if($result==FALSE) {
-        echo"Error. Message was not sent.<br>"; 
-    } else {
-        echo"Thank you! Your message has been sent successfully.<br>";
-        echo"<a href='../index.html'>Return to Home</a>";
-        die();
-    }
-}
-?>
+
+            <?php if (isset($success)): ?>
+            <p style="color:#28a745;"><?= $success ?></p>
+        <?php elseif (isset($error)): ?>
+            <p style="color:#dc3545;"><?= $error ?></p>
+        <?php endif; ?>
+
 <form action="contact.php" method="post">
     Name<input type="text" name="name" required><br>
     Email<input type="text" name="email" required><br>
