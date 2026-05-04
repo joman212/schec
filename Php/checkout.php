@@ -179,8 +179,8 @@ mysqli_close($conn);
     <img src="../images/logo.png" alt="Schecter Guitars" style="height:40px;width:auto;">
   </div>
   <a href="../index.html">Home</a>
-  <a href="../html/products.html">Guitars</a>
-  <a href="../html/Accessories.html">Accessories</a>
+  <a href="../php/products.php">Guitars</a>
+  <a href="../php/accessories.php">Accessories</a>
   <a href="../html/about.html">About</a>
   <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>
@@ -205,7 +205,7 @@ mysqli_close($conn);
     </p>
   <?php elseif (empty($page_items)): ?>
     <p style="color:#E5E5E5;text-align:center;padding:2rem">
-      Your cart is empty. <a href="../html/products.html">Keep shopping</a>
+      Your cart is empty. <a href="../php/products.php">Keep shopping</a>
     </p>
   <?php else: ?>
 

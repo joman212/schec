@@ -48,8 +48,8 @@ content="width=device-width, initial-scale=1.0">
   </div>
   
   <a href="../index.html">Home</a>
-  <a href="../html/products.html">Guitars</a>
-  <a href="../html/Accessories.html">Accessories</a>
+  <a href="../php/products.php">Guitars</a>
+  <a href="../php/accessories.php">Accessories</a>
   <a href="../html/about.html">About</a>
   <a href="../php/support.php">Support</a>
   <a href="../php/Contact.php">Contact</a>

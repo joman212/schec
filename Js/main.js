@@ -199,7 +199,7 @@
 
       if (cart.length === 0) {
         container.innerHTML = '<div class="empty-cart"><p>Your cart is empty.</p>' +
-          '<p><a href="products.html">Continue Shopping</a></p></div>';
+          '<p><a href="products.php">Continue Shopping</a></p></div>';
         if (summary) summary.style.display = 'none';
         if (totalEl) totalEl.textContent = '0.00';
         window.updateCartBadge();
@@ -555,7 +555,7 @@ function initAccountPage() {
     .then(r => r.json())
     .then(data => {
       if (!data.success || !data.items) {
-        if (cartPreview) cartPreview.innerHTML = '<p class="empty-cart-preview">Your cart is empty. <a href="../html/products.html">Browse products</a></p>';
+        if (cartPreview) cartPreview.innerHTML = '<p class="empty-cart-preview">Your cart is empty. <a href="../php/products.php">Browse products</a></p>';
         if (cartCountEl) cartCountEl.textContent = '0';
         return;
       }
@@ -568,7 +568,7 @@ function initAccountPage() {
 
       if (cartPreview) {
         if (!items.length) {
-          cartPreview.innerHTML = '<p class="empty-cart-preview">Your cart is empty. <a href="../html/products.html">Browse products</a></p>';
+          cartPreview.innerHTML = '<p class="empty-cart-preview">Your cart is empty. <a href="../php/products.php">Browse products</a></p>';
         } else {
           let html = items.slice(0, 3).map(item => {
             const rawImg = item.image || '';
@@ -597,7 +597,7 @@ function initAccountPage() {
     .then(r => r.json())
     .then(data => {
       if (!data.success) {
-        if (ordersList) ordersList.innerHTML = '<p class="no-orders">No orders yet. <a href="../html/products.html">Start shopping!</a></p>';
+        if (ordersList) ordersList.innerHTML = '<p class="no-orders">No orders yet. <a href="../php/products.php">Start shopping!</a></p>';
         if (totalOrderEl) totalOrderEl.textContent = '0';
         return;
       }
@@ -612,7 +612,7 @@ function initAccountPage() {
 
       if (!ordersList) return;
       if (!orders.length) {
-        ordersList.innerHTML = '<p class="no-orders">No orders yet. <a href="../html/products.html">Start shopping!</a></p>';
+        ordersList.innerHTML = '<p class="no-orders">No orders yet. <a href="../php/products.php">Start shopping!</a></p>';
         return;
       }
 
