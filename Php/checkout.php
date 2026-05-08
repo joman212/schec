@@ -1,116 +1,59 @@
 <?php
 session_start();
+
 $conn = mysqli_connect("localhost", "root", "", "schecter_db");
+
+function json_out($data) { header('Content-Type: application/json'); echo json_encode($data); exit; }
+function db_rows($conn, $sql) { return mysqli_fetch_all(mysqli_query($conn, $sql), MYSQLI_ASSOC); }
+
 if (!$conn) {
-    if (strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false || isset($_GET['action'])) {
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => 'DB connection failed']);
-        exit;
-    }
-    die("DB connection failed");
+    isset($_GET['action']) ? json_out(['success' => false, 'message' => 'DB connection failed']) : die("DB connection failed");
 }
 
-$logged_in = isset($_SESSION['user_id']);
-$user_id   = $logged_in ? (int)$_SESSION['user_id'] : 0;
+$logged_in  = isset($_SESSION['user_id']);
+$user_id    = $logged_in ? (int)$_SESSION['user_id'] : 0;
 $get_action = $_GET['action'] ?? '';
 
+if (in_array($get_action, ['get_cart', 'get_orders']) && !$logged_in)
+    json_out(['success' => false, 'message' => 'not_logged_in']);
+
 if ($get_action === 'get_cart') {
-    header('Content-Type: application/json');
-    if (!$logged_in) {
-        echo json_encode(['success' => false, 'message' => 'not_logged_in']);
-        exit;
-    }
-    $result = mysqli_query($conn,
-        "SELECT c.quantity, p.id, p.name, p.price, p.image
-         FROM cart c JOIN products p ON c.product_id = p.id
-         WHERE c.user_id = $user_id"
-    );
-    $items = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $items[] = [
-            'id'       => (string)$row['id'],
-            'name'     => $row['name'],
-            'price'    => (float)$row['price'],
-            'image'    => $row['image'],
-            'quantity' => (int)$row['quantity']
-        ];
-    }
-    echo json_encode(['success' => true, 'items' => $items]);
-    exit;
+    $rows = db_rows($conn, "SELECT c.quantity, p.id, p.name, p.price, p.image
+                             FROM cart c JOIN products p ON c.product_id = p.id
+                             WHERE c.user_id = $user_id");
+    json_out(['success' => true, 'items' => array_map(fn($r) => [
+        'id' => (string)$r['id'], 'name' => $r['name'],
+        'price' => (float)$r['price'], 'image' => $r['image'], 'quantity' => (int)$r['quantity']
+    ], $rows)]);
 }
 
 if ($get_action === 'get_orders') {
-    header('Content-Type: application/json');
-    if (!$logged_in) {
-        echo json_encode(['success' => false, 'message' => 'not_logged_in']);
-        exit;
+    $orders = db_rows($conn, "SELECT id, total_amount, status, created_at FROM orders
+                               WHERE user_id = $user_id ORDER BY created_at DESC");
+    foreach ($orders as &$o) {
+        $o['total_amount'] = (float)$o['total_amount'];
+        $o['items'] = db_rows($conn, "SELECT oi.quantity, oi.price, p.name, p.image
+                                       FROM order_items oi JOIN products p ON oi.product_id = p.id
+                                       WHERE oi.order_id = {$o['id']}");
     }
-    $result = mysqli_query($conn,
-        "SELECT id, total_amount, status, created_at FROM orders
-         WHERE user_id = $user_id ORDER BY created_at DESC"
-    );
-    $orders = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $oid = (int)$row['id'];
-        $ir  = mysqli_query($conn,
-            "SELECT oi.quantity, oi.price, p.name, p.image
-             FROM order_items oi JOIN products p ON oi.product_id = p.id
-             WHERE oi.order_id = $oid"
-        );
-        $order_items = [];
-        while ($item = mysqli_fetch_assoc($ir)) {
-            $order_items[] = [
-                'name'     => $item['name'],
-                'quantity' => (int)$item['quantity'],
-                'price'    => (float)$item['price'],
-                'image'    => $item['image']
-            ];
-        }
-        $orders[] = [
-            'id'           => $row['id'],
-            'total_amount' => (float)$row['total_amount'],
-            'status'       => $row['status'],
-            'created_at'   => $row['created_at'],
-            'items'        => $order_items
-        ];
-    }
-    echo json_encode(['success' => true, 'orders' => $orders]);
-    exit;
+    json_out(['success' => true, 'orders' => $orders]);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' &&
     strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false) {
 
-    header('Content-Type: application/json');
+    if (!$logged_in) json_out(['success' => false, 'message' => 'not_logged_in']);
 
-    if (!$logged_in) {
-        echo json_encode(['success' => false, 'message' => 'not_logged_in']);
-        exit;
-    }
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
 
-    $data   = json_decode(file_get_contents('php://input'), true) ?? [];
-    $action = $data['action'] ?? '';
+    if (($data['action'] ?? '') === 'place_order') {
+        $cart = db_rows($conn, "SELECT c.quantity, p.id, p.name, p.price
+                                 FROM cart c JOIN products p ON c.product_id = p.id
+                                 WHERE c.user_id = $user_id");
 
-    if ($action === 'place_order') {
-        $result = mysqli_query($conn,
-            "SELECT c.quantity, p.id, p.name, p.price
-             FROM cart c JOIN products p ON c.product_id = p.id
-             WHERE c.user_id = $user_id"
-        );
-        $cart = [];
-        while ($row = mysqli_fetch_assoc($result)) {
-            $cart[] = $row;
-        }
+        if (empty($cart)) json_out(['success' => false, 'message' => 'Cart is empty']);
 
-        if (empty($cart)) {
-            echo json_encode(['success' => false, 'message' => 'Cart is empty']);
-            exit;
-        }
-
-        $total = 0.0;
-        foreach ($cart as $item) {
-            $total += (float)$item['price'] * (int)$item['quantity'];
-        }
+        $total = array_sum(array_map(fn($i) => (float)$i['price'] * (int)$i['quantity'], $cart));
 
         $stmt = $conn->prepare("INSERT INTO orders (user_id, total_amount, status) VALUES (?, ?, 'pending')");
         $stmt->bind_param('id', $user_id, $total);
@@ -118,47 +61,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' &&
         $order_id = $conn->insert_id;
         $stmt->close();
 
-        $item_stmt = $conn->prepare(
-            "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)"
-        );
+        $stmt = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
         foreach ($cart as $item) {
-            $pid   = (int)$item['id'];
-            $qty   = (int)$item['quantity'];
-            $price = (float)$item['price'];
-            $item_stmt->bind_param('iiid', $order_id, $pid, $qty, $price);
-            $item_stmt->execute();
+            $pid = (int)$item['id']; $qty = (int)$item['quantity']; $price = (float)$item['price'];
+            $stmt->bind_param('iiid', $order_id, $pid, $qty, $price);
+            $stmt->execute();
         }
-        $item_stmt->close();
+        $stmt->close();
 
-        $del = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
-        $del->bind_param('i', $user_id);
-        $del->execute();
-        $del->close();
+        $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
+        $stmt->bind_param('i', $user_id);
+        $stmt->execute();
+        $stmt->close();
 
-        echo json_encode([
-            'success'  => true,
-            'order_id' => $order_id,
-            'total'    => $total
-        ]);
-        exit;
+        json_out(['success' => true, 'order_id' => $order_id, 'total' => $total]);
     }
 
-    echo json_encode(['success' => false, 'message' => 'Unknown action']);
-    exit;
+    json_out(['success' => false, 'message' => 'Unknown action']);
 }
 
 $page_items = [];
 $page_total = 0.0;
 if ($logged_in) {
-    $result = mysqli_query($conn,
-        "SELECT c.quantity, p.id, p.name, p.price, p.image
-         FROM cart c JOIN products p ON c.product_id = p.id
-         WHERE c.user_id = $user_id"
-    );
-    while ($row = mysqli_fetch_assoc($result)) {
-        $page_items[] = $row;
-        $page_total  += (float)$row['price'] * (int)$row['quantity'];
-    }
+    $page_items = db_rows($conn, "SELECT c.quantity, p.id, p.name, p.price, p.image
+                                   FROM cart c JOIN products p ON c.product_id = p.id
+                                   WHERE c.user_id = $user_id");
+    $page_total = array_sum(array_map(fn($r) => (float)$r['price'] * (int)$r['quantity'], $page_items));
 }
 mysqli_close($conn);
 ?>
