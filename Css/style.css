@@ -26,9 +26,7 @@ html {
   --btn-hover: #a24a13;
 ;
 }
-input {
-  max-width: 100px;
-}
+
 body {
   font-family: 'Noto Sans', sans-serif;
   background-color: var(--bg-dark);
@@ -695,8 +693,9 @@ form {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  max-width: 100% !important;
+  width: 100%;
 }
-
 .signup form {
   max-width: 400px;
   margin: auto;

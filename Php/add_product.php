@@ -14,8 +14,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stock=$_POST["stock"]; 
     
     $img=$_FILES["image"]["name"];
-    $target="Images/".$img;
-    move_uploaded_file($_FILES["image"]["tmp_name"],$target);
+    $target = __DIR__ . "/../Images/" . $img;
+    move_uploaded_file($_FILES["image"]["tmp_name"], $target);
     
     $conn= mysqli_connect("localhost","root","","schecter_db");
     if($conn==TRUE) {
@@ -23,8 +23,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo"Error. Connection failed!<br>";
         die();
     }
-    
-    $stmt="INSERT INTO`products`(`name`,`price`,`image`,`description`,`category`,`stock`) VALUES('$name','$price','$target','$description','$category','$stock')";
+    $db_image_path = "Images/" . $img;
+    $stmt = "INSERT INTO `products`(`name`,`price`,`image`,`description`,`category`,`stock`) VALUES('$name','$price','$db_image_path','$description','$category','$stock')";
     $result= mysqli_query($conn,$stmt);
     if($result==FALSE) {
         echo"Error. Product was not added.<br>";

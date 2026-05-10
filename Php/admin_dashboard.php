@@ -50,7 +50,7 @@ if($conn==TRUE) {} else { echo"Error. Connection failed!<br>"; die(); }
 ?>
 <h2>Admin Dashboard</h2>
 <h3>Welcome, <?php echo $_SESSION["user_name"]; ?>!</h3>
-<a href="add_product.php" class="btn">Add New Product</a> <a href="login.php?logout=1">Logout</a>
+<a href="add_product.php" class="btn">Add New Product</a> <a href="login.php?logout=1" class="btn">Logout</a>
 <hr>
 
 <h3>Quick Stats</h3>
@@ -86,6 +86,30 @@ if($result!=FALSE && mysqli_num_rows($result)>0) {
     echo"</table>";
 } else {
     echo"No messages found.";
+}
+?>
+<h3>Manage Products</h3>
+<?php
+$stmt = "SELECT * FROM `products` ORDER BY id DESC";
+$result = mysqli_query($conn, $stmt);
+if ($result != FALSE && mysqli_num_rows($result) > 0) {
+    echo "<table border='1'>
+        <tr>
+            <th>ID</th><th>Name</th><th>Price</th><th>Category</th><th>Stock</th><th>Action</th>
+        </tr>";
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo "<tr>
+            <td>" . $row["id"] . "</td>
+            <td>" . $row["name"] . "</td>
+            <td>" . $row["price"] . "</td>
+            <td>" . $row["category"] . "</td>
+            <td>" . $row["stock"] . "</td>
+            <td><a href='edit_product.php?id=" . $row["id"] . "' class='btn'>Edit</a></td>
+        </tr>";
+    }
+    echo "</table>";
+} else {
+    echo "No products found.";
 }
 ?>
 </div>
