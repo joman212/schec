@@ -1,26 +1,45 @@
 <?php
 session_start();
 
+$success = "";
+$error   = "";
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $first_name = $_POST['first_name'];
-    $last_name  = $_POST['last_name'];
-    $email      = $_POST['email'];
+    $first_name = trim($_POST['first_name']);
+    $last_name  = trim($_POST['last_name']);
+    $email      = trim($_POST['email']);
     $password   = $_POST['password'];
 
-    if ($password !== $_POST['confirm_password']) die("Error. Passwords do not match.");
-
-    $password = password_hash($password, PASSWORD_BCRYPT);
-
-    $conn = new mysqli('localhost', 'root', '', 'schecter_db');
-    $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param('ssss', $first_name, $last_name, $email, $password);
-
-    if ($stmt->execute()) {
-        echo "Account created! <a href='login.php'>Login here</a>";
+    if ($password !== $_POST['confirm_password']) {
+        $error = "Error. Passwords do not match.";
     } else {
-        echo "Error. Account could not be created.";
+        $conn = new mysqli('localhost', 'root', '', 'schecter_db');
+        
+        if ($conn->connect_error) {
+            $error = "Database connection failed.";
+        } else {
+            $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+            $stmt->bind_param('s', $email);
+            $stmt->execute();
+            $stmt->store_result();
+            
+            if ($stmt->num_rows > 0) {
+                $error = "This email is already registered.";
+            } else {
+                $stmt->close();
+                $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)");
+                $stmt->bind_param('ssss', $first_name, $last_name, $email, $password);
+                
+                if ($stmt->execute()) {
+                    $success = "Account created successfully!";
+                } else {
+                    $error = "Error. Account could not be created.";
+                }
+            }
+            $stmt->close();
+            $conn->close();
+        }
     }
-    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -98,6 +117,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="auth-switch">
             Already have an account? <a href="login.php">Sign in</a>
         </div>
+<?php if ($success): ?>
+    <p style="color:#28a745; margin-bottom:15px; text-align:center;"><?= $success ?></p>
+<?php elseif ($error): ?>
+    <p style="color:#dc3545; margin-bottom:15px; text-align:center;"><?= $error ?></p>
+<?php endif; ?>
     </div>
 </div>
  
@@ -120,5 +144,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </footer>
  
 <script src="../js/main.js"></script>
+<script>
+<?php if ($success): ?>
+    document.querySelector('.auth-form').reset();
+<?php endif; ?>
+</script>
 </body>
 </html>

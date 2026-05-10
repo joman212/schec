@@ -143,7 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             </div>
             <div class="form-group">
                 <label>Current Image</label><br>
-                <img src="../<?php echo $product['image']; ?>" alt="Product Image" style="height:80px;margin-bottom:8px;"><br>
+                <img src="../<?php echo $product['image']; ?>" alt="Product Image" style="height:auto;width:100%;margin-bottom:8px;"><br>
                 <label>Replace Image (optional)</label>
                 <input type="file" name="image">
             </div>

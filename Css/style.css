@@ -559,14 +559,20 @@ nav ul li a {
 .video-grid {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 30px;
   flex-wrap: wrap;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .video-container {
   text-align: center;
   padding: 20px;
   transition: transform 0.3s ease;
+  flex: 1;
+  min-width: min(100%, 450px);
+  max-width: 500px;
 }
 
 .video-container:hover {
@@ -575,16 +581,18 @@ nav ul li a {
 
 .video-container iframe {
   width: 100%;
-  max-width: 560px;
-  height: clamp(200px, 40vw, 315px);
+  aspect-ratio: 16/9;
+  height: auto;
+  min-height: 280px;
   border-radius: 10px;
   box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
   border: none;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .video-container iframe:hover {
   box-shadow: 0 12px 32px rgba(231, 110, 36, 0.25);
+  transform: scale(1.02);
 }
 
 .image-gallery {
@@ -1926,7 +1934,6 @@ footer {
 .carousel-slide {
   min-width: 100%;
   position: relative;
-  display: none;
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
@@ -2085,6 +2092,7 @@ footer {
   .video-grid {
     flex-direction: column;
     align-items: center;
+    padding: 15px;
   }
 }
 
@@ -2170,6 +2178,7 @@ footer {
     align-items: flex-start;
     gap: 0.5rem;
   }
+  
   .account-wrapper {
     padding: 2rem 1rem;
   }
@@ -2572,4 +2581,11 @@ a:hover {
         align-items: flex-start;
         gap: 8px;
     }
+}
+
+.btn:hover, .checkout-btn:hover, .auth-btn:hover, .action-btn:hover, .remove-btn:hover, .view-cart-btn:hover,
+button.btn:hover, button.checkout-btn:hover, button.auth-btn:hover, button.action-btn:hover, button.remove-btn:hover,
+.forgot-link:hover, .auth-switch a:hover, .terms-check a:hover, .no-orders a:hover, .empty-cart-preview a:hover, 
+.form-links a:hover, .sideNav a:hover, .oc-sidebar a:hover {
+    text-decoration: none !important;
 }

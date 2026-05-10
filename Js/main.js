@@ -723,15 +723,12 @@ function showSlide(index) {
   const track = document.getElementById('carouselTrack');
   if (!slides.length || !track) return;
 
-  // Clamp index
   if (index >= slides.length) slideIndex = 0;
   else if (index < 0) slideIndex = slides.length - 1;
   else slideIndex = index;
 
-  // Smooth slide animation
   track.style.transform = `translateX(-${slideIndex * 100}%)`;
 
-  // Update dots & active state (for accessibility)
   slides.forEach((s, i) => s.classList.toggle('active', i === slideIndex));
   dots.forEach((d, i) => d.classList.toggle('active', i === slideIndex));
 }
