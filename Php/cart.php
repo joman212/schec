@@ -151,6 +151,6 @@ content="width=device-width, initial-scale=1.0">
     </div>
     </footer>
 <script src="../js/main.js"></script>
-<script>localStorage.setItem("userCart", ' . json_encode($items) . ');</script>
+<script>localStorage.setItem("userCart", <?= json_encode($items) ?>);</script>
 </body>
 </html>

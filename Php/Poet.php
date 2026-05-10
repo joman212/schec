@@ -87,7 +87,7 @@ content="width=device-width, initial-scale=1.0">
         SOLD OUT
     </button>
     <div style="margin-top:15px;">
-        <a href="../html/Contact.html" class="btn" style="background:#1A2238;color:#E76E24;border:2px solid #E76E24;">🔔 Notify When Available</a>
+        <a href="../php/Contact.php" class="btn" style="background:#1A2238;color:#E76E24;border:2px solid #E76E24;">🔔 Notify When Available</a>
     </div>
         <p style="margin-top:20px;font-size:0.9rem;color:#888;font-style:italic;">
         This limited edition guitar was produced in a run of only 30 units worldwide. All units have been claimed.
