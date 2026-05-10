@@ -13,7 +13,6 @@ $success = "";
 $error   = "";
 $product = null;
 
-// Handle delete
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete"])) {
     $id   = $_POST["id"];
     $stmt = "SELECT `image` FROM `products` WHERE `id`='$id'";
@@ -31,7 +30,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete"])) {
     die();
 }
 
-// Handle update
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id          = $_POST["id"];
     $name        = $_POST["name"];
@@ -58,13 +56,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $success = "$name was successfully updated.";
     }
 
-    // Reload product after update
     $stmt    = "SELECT * FROM `products` WHERE `id`='$id'";
     $res     = mysqli_query($conn, $stmt);
     $product = $res ? mysqli_fetch_assoc($res) : null;
 }
 
-// Load product on GET
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (!isset($_GET["id"])) { header("Location: admin_dashboard.php"); die(); }
     $id      = $_GET["id"];
