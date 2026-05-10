@@ -69,27 +69,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-row">
                 <div class="form-group">
                     <label for="first_name">First Name</label>
-                    <input type="text" id="first_name" name="first_name" placeholder="John" required>
+                    <input type="text" id="first_name" name="first_name" required>
                 </div>
                 <div class="form-group">
                     <label for="last_name">Last Name</label>
-                    <input type="text" id="last_name" name="last_name" placeholder="Doe" required>
+                    <input type="text" id="last_name" name="last_name" required>
                 </div>
             </div>
  
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                <input type="email" id="email" name="email" required>
             </div>
  
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="••••••••" required>
+                <input type="password" id="password" name="password" required>
             </div>
  
             <div class="form-group">
                 <label for="confirm_password">Confirm Password</label>
-                <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+                <input type="password" id="confirm_password" name="confirm_password"  required>
             </div>
  
             <button type="submit" class="auth-btn">Sign Up</button>

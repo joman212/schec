@@ -9,11 +9,11 @@ if (!isset($_SESSION["is_admin"]) || $_SESSION["is_admin"] != TRUE) {
 $conn = mysqli_connect("localhost", "root", "", "schecter_db");
 if ($conn == FALSE) { echo "Error. Connection failed!<br>"; die(); }
 
-$modal_message = "";
-$modal_type    = "";
-$modal_buttons = [];
-$product       = null;
+$success = "";
+$error   = "";
+$product = null;
 
+// Handle delete
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete"])) {
     $id   = $_POST["id"];
     $stmt = "SELECT `image` FROM `products` WHERE `id`='$id'";
@@ -31,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete"])) {
     die();
 }
 
+// Handle update
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id          = $_POST["id"];
     $name        = $_POST["name"];
@@ -38,28 +39,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST["description"];
     $category    = $_POST["category"];
     $stock       = $_POST["stock"];
+    $path        = $_POST["path"];
 
     if (!empty($_FILES["image"]["name"])) {
         $img           = $_FILES["image"]["name"];
         $target        = __DIR__ . "/../Images/" . $img;
         move_uploaded_file($_FILES["image"]["tmp_name"], $target);
         $db_image_path = "Images/" . $img;
-        $stmt = "UPDATE `products` SET `name`='$name', `price`='$price', `description`='$description', `category`='$category', `stock`='$stock', `image`='$db_image_path' WHERE `id`='$id'";
+        $stmt = "UPDATE `products` SET `name`='$name', `price`='$price', `description`='$description', `category`='$category', `stock`='$stock', `image`='$db_image_path', `path`='$path' WHERE `id`='$id'";
     } else {
-        $stmt = "UPDATE `products` SET `name`='$name', `price`='$price', `description`='$description', `category`='$category', `stock`='$stock' WHERE `id`='$id'";
+        $stmt = "UPDATE `products` SET `name`='$name', `price`='$price', `description`='$description', `category`='$category', `stock`='$stock', `path`='$path' WHERE `id`='$id'";
     }
 
     $result = mysqli_query($conn, $stmt);
     if ($result == FALSE) {
-        $modal_message = "Error. Product was not updated.";
-        $modal_type    = "error";
-        $modal_buttons = [["label" => "Try Again", "close" => true, "color" => "#c41e3a"]];
+        $error = "Error. Product was not updated.";
     } else {
-        $modal_message = "$name was successfully updated.";
-        $modal_type    = "success";
-        $modal_buttons = [["label" => "Back to Dashboard", "href" => "admin_dashboard.php", "color" => "#1b5e20"]];
+        $success = "$name was successfully updated.";
     }
 
+    // Reload product after update
     $stmt    = "SELECT * FROM `products` WHERE `id`='$id'";
     $res     = mysqli_query($conn, $stmt);
     $product = $res ? mysqli_fetch_assoc($res) : null;
@@ -115,6 +114,13 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
 <div class="page-wrapper">
     <h1 class="page-title">Edit Product</h1>
+
+    <?php if ($success): ?>
+        <p style="color:#28a745; margin-bottom:15px;"><?= $success ?></p>
+    <?php elseif ($error): ?>
+        <p style="color:#dc3545; margin-bottom:15px;"><?= $error ?></p>
+    <?php endif; ?>
+
     <?php if ($product): ?>
     <div class="form-container">
         <form action="edit_product.php" method="post" enctype="multipart/form-data">
@@ -145,41 +151,26 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 <label>Replace Image (optional)</label>
                 <input type="file" name="image">
             </div>
+            <div class="form-group">
+                <label>Page Path</label>
+                <input type="text" name="path" value="<?php echo htmlspecialchars($product['path'] ?? ''); ?>">
+            </div>
             <input type="submit" value="Update Product">
         </form>
 
         <form id="deleteForm" action="edit_product.php" method="post">
             <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
             <input type="hidden" name="delete" value="1">
-            <input type="submit" id="deleteBtn" value="Delete Product" style="background-color:#c41e3a;">
+            <input type="submit" id="deleteBtn" value="Delete Product" style="background-color:#c41e3a; margin-top:10px;">
         </form>
     </div>
     <?php endif; ?>
+
     <div class="form-links">
         <a href="admin_dashboard.php">Back to Dashboard</a>
     </div>
 </div>
 
-<div id="deleteModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center;">
-    <div style="background:#1a1a1a;border:2px solid #c41e3a;border-radius:10px;padding:30px;max-width:400px;width:90%;text-align:center;">
-        <h3 style="color:#c41e3a;margin-bottom:15px;">Delete Product?</h3>
-        <p style="color:#ccc;margin-bottom:25px;">This cannot be undone. The product and its image will be permanently removed.</p>
-        <div style="display:flex;gap:15px;justify-content:center;">
-            <button id="cancelDelete" style="padding:10px 25px;background:#444;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:15px;">Cancel</button>
-            <button id="confirmDelete" style="padding:10px 25px;background:#c41e3a;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:15px;">Delete</button>
-        </div>
-    </div>
-</div>
-
-<?php if (!empty($modal_message)): ?>
-<script>
-window._adminMsg = {
-    message: <?php echo json_encode($modal_message); ?>,
-    type:    <?php echo json_encode($modal_type); ?>,
-    buttons: <?php echo json_encode($modal_buttons); ?>
-};
-</script>
-<?php endif; ?>
 <script src="../Js/main.js"></script>
 </body>
 </html>

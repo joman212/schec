@@ -6,9 +6,7 @@ if (!isset($_SESSION["is_admin"]) || $_SESSION["is_admin"] != TRUE) {
     die();
 }
 
-$modal_message = "";
-$modal_type    = "";
-$modal_buttons = [];
+$error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name        = $_POST["name"];
@@ -16,6 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST["description"];
     $category    = $_POST["category"];
     $stock       = $_POST["stock"];
+    $path        = $_POST["path"];
 
     $img           = $_FILES["image"]["name"];
     $target        = __DIR__ . "/../Images/" . $img;
@@ -25,20 +24,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn = mysqli_connect("localhost", "root", "", "schecter_db");
     if ($conn == FALSE) { echo "Error. Connection failed!<br>"; die(); }
 
-    $stmt   = "INSERT INTO `products`(`name`,`price`,`image`,`description`,`category`,`stock`) VALUES('$name','$price','$db_image_path','$description','$category','$stock')";
+    $stmt   = "INSERT INTO `products`(`name`,`price`,`image`,`description`,`category`,`stock`,`path`) VALUES('$name','$price','$db_image_path','$description','$category','$stock','$path')";
     $result = mysqli_query($conn, $stmt);
 
     if ($result == FALSE) {
-        $modal_message = "Error. Product was not added.";
-        $modal_type    = "error";
-        $modal_buttons = [["label" => "Try Again", "close" => true, "color" => "#c41e3a"]];
+        $error = "Error. Product was not added.";
     } else {
-        $modal_message = "$name was successfully added!";
-        $modal_type    = "success";
-        $modal_buttons = [
-            ["label" => "Add Another", "href" => "add_product.php",    "color" => "#444"],
-            ["label" => "Dashboard",   "href" => "admin_dashboard.php", "color" => "#1b5e20"]
-        ];
+        header("Location: admin_dashboard.php?msg=" . urlencode("$name was successfully added!") . "&type=success");
+        die();
     }
 }
 ?>
@@ -79,6 +72,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <div class="page-wrapper">
     <h1 class="page-title">Add New Product</h1>
+
+    <?php if ($error): ?>
+        <p style="color:#dc3545; margin-bottom:15px;"><?= $error ?></p>
+    <?php endif; ?>
+
     <div class="form-container">
         <form action="add_product.php" method="post" enctype="multipart/form-data">
             <div class="form-group">
@@ -105,6 +103,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label>Upload Image</label>
                 <input type="file" name="image" required>
             </div>
+            <div class="form-group">
+                <label>Page Path </label>
+                <input type="text" name="path">
+            </div>
             <input type="submit" value="Add Product">
         </form>
     </div>
@@ -113,15 +115,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </div>
 
-<?php if (!empty($modal_message)): ?>
-<script>
-window._adminMsg = {
-    message: <?php echo json_encode($modal_message); ?>,
-    type:    <?php echo json_encode($modal_type); ?>,
-    buttons: <?php echo json_encode($modal_buttons); ?>
-};
-</script>
-<?php endif; ?>
 <script src="../Js/main.js"></script>
 </body>
 </html>
