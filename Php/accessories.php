@@ -1,21 +1,21 @@
 <?php
 $conn = mysqli_connect("localhost", "root", "", "schecter_db");
 
-$result = mysqli_query($conn, "SELECT id, name, price, image, detail_url FROM products WHERE category = 'accessories' ORDER BY id ASC");
+$result = mysqli_query($conn, "SELECT id, name, price, image, path FROM products WHERE category = 'accessories' ORDER BY id ASC");
 
 $productGrid = '<div class="guitar-grid">';
 while ($row = mysqli_fetch_assoc($result)) {
     $name       = $row["name"];
     $price      = number_format($row["price"], 2);
     $image      = $row["image"];
-    $detail_url = $row["detail_url"];
+    $path = $row["path"];
 
     $productGrid .= "
         <div class=\"guitar\">
             <img src=\"../{$image}\" alt=\"{$name}\">
             <h3>{$name}</h3>
             <p class=\"price\">\${$price}</p>
-            <a href=\"{$detail_url}\" class=\"btn\">View Details</a>
+            <a href=\"{$path}\" class=\"btn\">View Details</a>
         </div>";
 }
 $productGrid .= '</div>';
